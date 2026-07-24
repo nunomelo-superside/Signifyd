@@ -1060,7 +1060,7 @@
      separate, independent copy to try a different approach without
      touching or losing the original or the alt version. Delete this whole
      section + its CSS counterpart once one approach wins. -->
-<section class="solutions-alt2-wrapper section-divider">
+<section class="solutions-alt2-wrapper section-divider" style="display:none" data-hidden-for-debug="true">
   <div class="solutions-alt2-block grid-frame">
   <div class="solutions-alt2-left-rail">
   <div class="solutions-alt2-left-wrapper">
@@ -1085,10 +1085,10 @@
       </div>
     </div>
 
-    <div class="solutions-alt2-panels-outer">
     <div class="solutions-alt2-panels-fade-rail" aria-hidden="true">
       <div class="solutions-alt2-panels-fade"></div>
     </div>
+
     <div class="solutions-alt2-panels">
       <article class="solutions-alt2-panel" data-panel-index="0">
         <div class="solutions-alt2-panel-copy">
@@ -1144,7 +1144,6 @@
           </div>
         </div>
       </article>
-    </div>
     </div>
 
     <div class="solutions-alt2-visual-rail">
@@ -1332,13 +1331,14 @@
       leftWrapper.style.paddingTop = '';
       return;
     }
-    // Reset before measuring: leftRail and panelsFadeRail both sit in
-    // document flow BEFORE lastHeading (unlike rail/visualRail, side columns
-    // whose own height can't shift anything above it), so a stale
+    // Reset before measuring: leftRail sits in document flow BEFORE
+    // lastHeading (unlike rail/visualRail/panelsFadeRail, which overlap
+    // .solutions-alt2-panels' own grid cell rather than precede it, so
+    // their own height can't shift anything above lastHeading), so a stale
     // height+margin left over from a previous call would throw off what
     // gets measured below before this call even gets to recompute it.
-    // Clearing both first makes every run measure the same true natural
-    // layout instead of building on whatever the last run left behind.
+    // panelsFadeRail is reset here too purely for symmetry/safety, not
+    // because it's been shown to need it.
     leftRail.style.height = '';
     leftRail.style.marginBottom = '';
     panelsFadeRail.style.height = '';
@@ -1373,29 +1373,22 @@
     const lastHeadingTop = lastHeading.getBoundingClientRect().top;
     const tabsHeight = tabsSticky.getBoundingClientRect().height;
     const leftWrapperHeight = leftWrapper.getBoundingClientRect().height;
-    const panelsFadeHeight = panelsFade.getBoundingClientRect().height;
-    // NOT the same `top` as tabs/visual: a sticky element's box extends
-    // DOWNWARD from `top` (top to top+height), so `top: headerOffset` would
-    // start the fade AT that line and dissolve INTO the readable text below
-    // it — the opposite of what's wanted. Ending the fade's box exactly at
-    // that line (so it dissolves INTO the header above, not into the text
-    // below) means starting it `panelsFadeHeight` earlier.
-    panelsFade.style.top = `${headerOffsetPx - panelsFadeHeight}px`;
     rail.style.height = `${Math.max(0, lastHeadingTop - rail.getBoundingClientRect().top + tabsHeight)}px`;
     visualRail.style.height = `${Math.max(0, lastHeadingTop - visualRail.getBoundingClientRect().top + visualHeight)}px`;
-    // Not the same formula as rail/visualRail either, for the same reason:
-    // this element's `top` is offset by -panelsFadeHeight from theirs, so
-    // (mirroring the same correction leftRail needed) that offset has to be
-    // canceled out of the height formula too, to keep the release point in
-    // sync with theirs. Working through the algebra, the -panelsFadeHeight
-    // in `top` and the "+ panelsFadeHeight" the tabs/visual formula has both
-    // drop out, leaving just the raw distance to lastHeading.
+    // This one's own `top` is deliberately headerOffsetPx MINUS its own
+    // height (see the CSS rule's comment for why) rather than headerOffsetPx
+    // itself — working through the same algebra as the headline rail below,
+    // that specific choice happens to cancel every correction term, leaving
+    // just the raw distance to lastHeading, no offset needed.
+    const panelsFadeHeight = panelsFade.getBoundingClientRect().height;
+    panelsFade.style.top = `${headerOffsetPx - panelsFadeHeight}px`;
     const panelsFadeRailHeight = Math.max(0, lastHeadingTop - panelsFadeRail.getBoundingClientRect().top);
     panelsFadeRail.style.height = `${panelsFadeRailHeight}px`;
-    // Cancels this rail's own push on .solutions-alt2-panels below it — same
-    // idea as leftRail's margin. No `gap` to also cancel here (unlike an
-    // earlier version of this): .solutions-alt2-panels-outer, this rail's
-    // actual parent, doesn't have one.
+    // Cancels this rail's own contribution to the grid row's auto height:
+    // .solutions-alt2-scroll-row's row sizes to its tallest item, and
+    // without this, this rail's own (potentially very tall) box would
+    // stretch that row taller than tabs/visual alone already do, adding
+    // dead space below the actual content.
     panelsFadeRail.style.marginBottom = `${-panelsFadeRailHeight}px`;
     // Same rail-height technique as tabs/visual above, but NOT the same
     // formula: rail/visualRail each release exactly when the last heading
@@ -1431,6 +1424,241 @@
   if (document.fonts && document.fonts.ready) {
     document.fonts.ready.then(updateRailHeight);
   }
+})();
+</script>
+
+<!-- SOLUTIONS4 — independent rebuild of the Solutions section (see
+     solutions4-brief.md). One tall scroller + a single sticky, flex-centered
+     stage. Only two things move while pinned: the copy (scrolled continuously
+     through a mask-cropped window) and the visual (the ported push-crossfade).
+     Title, subtitle and tab list stay static. Replaces .solutions-alt2-wrapper
+     as the live variant. -->
+<section class="solutions4-wrapper section-divider">
+  <div class="solutions4-scroller">
+    <div class="solutions4-stage grid-frame">
+      <div class="solutions4-block">
+        <h2 class="solutions4-title">
+          Commerce begins<br />
+          before <span class="solutions4-title-muted">the cart</span>.
+        </h2>
+        <p class="solutions4-subtitle">The more context you have before checkout, the more confidently you can approve it.</p>
+
+        <div class="solutions4-row">
+          <nav class="solutions4-tabs" aria-label="Feature sections">
+            <button type="button" class="solutions4-tab solutions4-tab--active" data-panel-index="0">ACCOUNT INTEGRITY</button>
+            <button type="button" class="solutions4-tab" data-panel-index="1">PURCHASE OPTIMIZATION</button>
+            <button type="button" class="solutions4-tab" data-panel-index="2">RETURNS ASSURANCE</button>
+            <button type="button" class="solutions4-tab" data-panel-index="3">LOREM IPSUM</button>
+          </nav>
+
+          <div class="solutions4-copy-window">
+            <div class="solutions4-copy-track">
+              <article class="solutions4-copy-panel" data-panel-index="0">
+                <p class="solutions4-copy-heading">
+                  Protect every account.<br />
+                  From creation to login to modification.
+                </p>
+                <p class="solutions4-copy-desc">Most fraud infrastructure is assembled before the first item hits the cart. Fake identities are created, real accounts are taken over, loyalty balances are drained. Signifyd monitors the full account lifecycle, not just the moment of purchase, so the fraudsters who pass every downstream check still can't get through.</p>
+                <div class="solutions4-copy-bottom">
+                  <button type="button" class="btn btn--primary">Learn More</button>
+                </div>
+              </article>
+
+              <article class="solutions4-copy-panel" data-panel-index="1">
+                <p class="solutions4-copy-heading">Approve more good orders. Stop more bad ones. Guarantee the difference.</p>
+                <p class="solutions4-copy-desc">Every order is a binary decision with asymmetric consequences. Approve fraud and you absorb the chargeback. Decline a good customer and you lose the sale, the relationship, and the lifetime value that goes with it. Signifyd resolves identity and intent in milliseconds, then backs every approved order with a financial guarantee, so the risk stays with us, not you.</p>
+                <div class="solutions4-copy-bottom">
+                  <button type="button" class="btn btn--primary">Learn More</button>
+                </div>
+              </article>
+
+              <article class="solutions4-copy-panel" data-panel-index="2">
+                <p class="solutions4-copy-heading">Easy for the right customers. Hard for everyone else.</p>
+                <p class="solutions4-copy-desc">A blanket returns policy is a gift to abusers and a tax on your best customers. Signifyd scores every post-purchase interaction so you can give high-LTV customers an instant refund, and we back it with a financial guarantee. Your appeasements budget stops feeding the abusers. Your call center volume drops. And the customers worth keeping get their money back fast enough to come back.</p>
+                <div class="solutions4-copy-bottom">
+                  <button type="button" class="btn btn--primary">Learn More</button>
+                </div>
+              </article>
+
+              <article class="solutions4-copy-panel" data-panel-index="3">
+                <p class="solutions4-copy-heading">Quam pellentesque ac nulla lectus pellentesque.</p>
+                <p class="solutions4-copy-desc">Id nibh velit porta nulla orci nunc. Molestie lectus viverra et et diam egestas ornare sit. Leo urna quis at enim commodo placerat bibendum. Et euismod hac scelerisque sed justo natoque mauris. Id amet id mauris libero netus massa. Diam velit euismod sit non orci elit. Sollicitudin ac amet condimentum mattis sed tincidunt ultrices.</p>
+                <div class="solutions4-copy-bottom">
+                  <button type="button" class="btn btn--primary">Learn More</button>
+                </div>
+              </article>
+            </div>
+          </div>
+
+          <div class="solutions4-visual-window">
+            <div class="solutions4-visual-placeholder solutions4-visual-placeholder--active" data-panel-index="0" aria-hidden="true">
+              <img src="assets/assets/Img v2/solutions 01.jpg" alt="" class="solutions4-visual-image" />
+            </div>
+            <div class="solutions4-visual-placeholder" data-panel-index="1" aria-hidden="true">
+              <img src="assets/assets/Img v2/solutions 02.jpg" alt="" class="solutions4-visual-image" />
+            </div>
+            <div class="solutions4-visual-placeholder" data-panel-index="2" aria-hidden="true">
+              <img src="assets/assets/Img v2/solutions 03.jpg" alt="" class="solutions4-visual-image" />
+            </div>
+            <div class="solutions4-visual-placeholder" data-panel-index="3" aria-hidden="true">
+              <img src="assets/assets/Img v2/solutions 04.jpg" alt="" class="solutions4-visual-image" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+(() => {
+  const section = document.currentScript.previousElementSibling;
+  const scroller = section.querySelector('.solutions4-scroller');
+  const tabs = section.querySelectorAll('.solutions4-tab');
+  const copyWindow = section.querySelector('.solutions4-copy-window');
+  const copyTrack = section.querySelector('.solutions4-copy-track');
+  const headings = section.querySelectorAll('.solutions4-copy-heading');
+  const visualPlaceholders = section.querySelectorAll('.solutions4-visual-placeholder');
+
+  const isMobile = () => window.innerWidth <= 900;
+
+  // ---- Image push-crossfade: ported verbatim from the original
+  //      .solutions-wrapper (pushPlaceholders + --active/--offscreen-top),
+  //      only the class prefix changed. Incoming pushes in from the scroll
+  //      direction while the outgoing one keeps moving and exits the same way.
+  let zCounter = 1;
+  const getPlaceholder = (index) =>
+    Array.from(visualPlaceholders).find((p) => Number(p.dataset.panelIndex) === index);
+
+  const pushPlaceholders = (incoming, outgoing, direction) => {
+    const enteringFromTop = direction === 'up';
+    incoming.style.zIndex = ++zCounter;
+    incoming.style.transition = 'none';
+    incoming.classList.remove('solutions4-visual-placeholder--active');
+    incoming.classList.toggle('solutions4-visual-placeholder--offscreen-top', enteringFromTop);
+    void incoming.offsetWidth;
+    incoming.style.transition = '';
+    incoming.classList.add('solutions4-visual-placeholder--active');
+
+    if (outgoing && outgoing !== incoming) {
+      outgoing.classList.remove('solutions4-visual-placeholder--active');
+      outgoing.classList.toggle('solutions4-visual-placeholder--offscreen-top', !enteringFromTop);
+    }
+  };
+
+  let currentActiveIndex = 0;
+  const setActive = (index) => {
+    if (index === currentActiveIndex) return;
+    const resolvedDirection = index > currentActiveIndex ? 'down' : 'up';
+    const outgoing = getPlaceholder(currentActiveIndex);
+    currentActiveIndex = index;
+    tabs.forEach((tab) => {
+      tab.classList.toggle('solutions4-tab--active', Number(tab.dataset.panelIndex) === index);
+    });
+    const incoming = getPlaceholder(index);
+    if (incoming) pushPlaceholders(incoming, outgoing, resolvedDirection);
+  };
+
+  // ---- Copy geometry: one measurement, recomputed only on the milestones
+  //      the original already waits on (resize / load / fonts.ready).
+  //      baseline puts heading[0] exactly on the alignment line at progress 0;
+  //      maxTranslate is the distance from heading[0] to the last heading, so
+  //      progress 1 puts the last heading on that same line. Panels with more
+  //      copy sit farther apart and so take proportionally more scroll.
+  const bufferPx = () =>
+    parseFloat(getComputedStyle(copyWindow).getPropertyValue('--s4-buffer')) || 96;
+  let baseline = 0;
+  let maxTranslate = 1;
+  const measure = () => {
+    if (isMobile()) {
+      copyTrack.style.transform = '';
+      return;
+    }
+    const first = headings[0].offsetTop;
+    const last = headings[headings.length - 1].offsetTop;
+    baseline = bufferPx() - first;
+    maxTranslate = Math.max(1, last - first);
+  };
+
+  // ---- Copy scroll: one ratio from the scroller's own rect, no element
+  //      measuring another. Progress reaches 1 one runway-length before the
+  //      section releases, so the last topic lands on the line, dwells briefly
+  //      (the runway), then native sticky glides the section out. The runway is
+  //      the only dead scroll; shrinking it doesn't change the copy pacing
+  //      (active travel = total minus the runway either way).
+  const scrollTravel = () => {
+    const total = scroller.offsetHeight - window.innerHeight;
+    const runwayVh = parseFloat(getComputedStyle(section).getPropertyValue('--s4-runway-vh')) || 25;
+    const runwayPx = (runwayVh / 100) * window.innerHeight;
+    return Math.max(1, total - runwayPx);
+  };
+  const applyScroll = () => {
+    if (isMobile()) return;
+    const progress = Math.min(1, Math.max(0, -scroller.getBoundingClientRect().top / scrollTravel()));
+    copyTrack.style.transform = `translateY(${baseline - progress * maxTranslate}px)`;
+  };
+
+  // ---- Active-topic detection: the original's "watch a center line, whichever
+  //      heading crosses it wins" observer, re-rooted at the small copy window
+  //      instead of the viewport. IntersectionObserver tracks elements through
+  //      an ancestor transform, so this works even though copyTrack moves via
+  //      transform rather than native scrolling.
+  const headingTargets = new Map(Array.from(headings).map((h, i) => [h, i]));
+  let observerArmed = false;
+  const armObserver = () => { observerArmed = true; };
+  window.addEventListener('load', armObserver);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(armObserver);
+
+  const observer = new IntersectionObserver(
+    (entries) => {
+      if (!observerArmed) return;
+      entries.forEach((entry) => {
+        if (entry.isIntersecting && headingTargets.has(entry.target)) {
+          setActive(headingTargets.get(entry.target));
+        }
+      });
+    },
+    { root: copyWindow, rootMargin: '-50% 0px -50% 0px', threshold: 0 }
+  );
+  headingTargets.forEach((_, h) => observer.observe(h));
+
+  // ---- Tab click: solve backwards for the progress that lands this heading on
+  //      the alignment line, convert it to an absolute page scrollY via the
+  //      scroller's own top/height, and hand it to Lenis (re-asserting the
+  //      clicked index once Lenis reports done, same race-dodge as the original).
+  tabs.forEach((tab) => {
+    tab.addEventListener('click', () => {
+      const index = Number(tab.dataset.panelIndex);
+      const heading = headings[index];
+      if (!heading) return;
+      setActive(index);
+      if (isMobile()) {
+        heading.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        return;
+      }
+      const targetProgress = (heading.offsetTop - headings[0].offsetTop) / maxTranslate;
+      const scrollerTopDoc = scroller.getBoundingClientRect().top + window.scrollY;
+      const targetY = scrollerTopDoc + targetProgress * scrollTravel();
+      if (typeof lenis !== 'undefined') {
+        lenis.scrollTo(targetY, { onComplete: () => setActive(index) });
+      } else {
+        window.scrollTo({ top: targetY, behavior: 'smooth' });
+      }
+    });
+  });
+
+  // ---- Wire up: single scroll source (Lenis if present, native otherwise),
+  //      plus the same recompute milestones the original uses.
+  const refresh = () => { measure(); applyScroll(); };
+  refresh();
+  if (typeof lenis !== 'undefined') {
+    lenis.on('scroll', applyScroll);
+  } else {
+    window.addEventListener('scroll', applyScroll, { passive: true });
+  }
+  window.addEventListener('resize', refresh);
+  window.addEventListener('load', refresh);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(refresh);
 })();
 </script>
 <section class="testimonials-block section-divider">

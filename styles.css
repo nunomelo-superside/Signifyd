@@ -2377,9 +2377,54 @@ button {
    to end at the bottom of the last panel's paragraph, so the tabs unstick
    there instead of following the page to the bottom of the section. */
 .solutions-alt2-tabs-rail {
-  grid-column: span 2;
+  /* Explicit column+row (not just `span 2`, auto row): all four items in
+     this row (tabs-rail, panels-fade-rail, panels, visual-rail) need
+     explicit placement now — .solutions-alt2-panels-fade-rail overlaps
+     .solutions-alt2-panels' own cell on purpose, and leaving even ONE of
+     the four to auto-place means the auto-placement algorithm treats that
+     cell as "taken" and pushes the auto-placed one down to the NEXT row
+     instead of overlapping — which is exactly what happened when only
+     panels-fade-rail had an explicit row: .solutions-alt2-panels got shoved
+     into row 2 while .solutions-alt2-visual-rail stayed in row 1, so they
+     no longer shared a start line at all. Pinning all four to row 1 keeps
+     them exactly where they've always been. */
+  grid-column: 1 / span 2;
+  grid-row: 1;
   width: 204px;
   position: relative;
+}
+
+/* Deliberately overlaps .solutions-alt2-panels' own grid cell (same start
+   column + span) rather than living inside that flex column as a child —
+   that was tried first and hit two different bugs depending on how it was
+   positioned (position:absolute parent → sticky child doesn't reliably
+   engage; normal-flow parent inside the `gap: 50vh` list → the negative
+   margin needed to cancel both its own height AND that gap came out more
+   negative than the rail was tall, which seems to have broken the sticky
+   child too). A second attempt anchored it inside .solutions-alt2-visual-sticky
+   instead (mirroring .solutions-alt2-bottom-mask) — but that only reaches
+   past its own sticky ancestor's edge in ONE direction: bottom-mask extends
+   below via `top: 100%` and works, while this fade needs to extend ABOVE
+   via a negative `top` (or equivalently `bottom: 100%`), and both render
+   nothing at all, seemingly clipped, despite no `overflow` set anywhere in
+   the chain. Being its own grid-overlapping sibling sidesteps both
+   problems: same proven shape as .solutions-alt2-tabs-rail (plain
+   normal-flow rail, JS height, sticky child, simple margin cancellation),
+   just placed in .solutions-alt2-panels' column instead of its own. */
+.solutions-alt2-panels-fade-rail {
+  grid-column: 3 / span 5;
+  grid-row: 1;
+  position: relative;
+  pointer-events: none;
+}
+
+.solutions-alt2-panels-fade {
+  position: sticky;
+  top: 10vh;
+  height: 96px;
+  z-index: 5;
+  background: linear-gradient(to bottom, red 0%, transparent 100%);
+  pointer-events: none;
 }
 
 .solutions-alt2-tabs-sticky {
@@ -2437,63 +2482,13 @@ button {
   opacity: 1;
 }
 
-/* Stacked panels */
-
-/* Holds the fade-rail and the actual panels flex list as plain stacked
-   siblings (no gap between them — panels needs to start exactly where it
-   always did) — grid-column lives here now instead of on
-   .solutions-alt2-panels itself, since the fade-rail needs to sit outside
-   that flex column's own `gap: 50vh`. Putting the fade-rail INSIDE that gap
-   context was tried first: it needed a negative margin that canceled both
-   its own height AND the 50vh gap, which came out more negative than the
-   rail was tall — that seems to have been enough to confuse the browser's
-   own layout for the sticky child inside it. Keeping the fade-rail as a
-   sibling of (not a child within) the gapped list sidesteps the issue
-   entirely: no gap to cancel, so its margin only ever needs to offset its
-   own height, exactly like .solutions-alt2-left-rail. */
-.solutions-alt2-panels-outer {
-  grid-column: span 5;
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-}
-
-/* Top padding matches .solutions-alt2-panels-fade's own height (96px, see
-   below), not the 50vh gap between panels — this isn't about giving panel 0
-   reading time, it's just clearance so the fade band (which sits flush
-   against panel 0 with zero effective space, by design, via its rail's
-   negative margin) doesn't directly overlap panel 0's own first line while
-   at rest. */
 .solutions-alt2-panels {
+  grid-column: 3 / span 5;
+  grid-row: 1;
   display: flex;
   flex-direction: column;
   gap: 50vh;
-  padding-top: 96px;
   min-width: 0;
-}
-
-/* Fade overlay lives here (inside the actual scrolling text column) instead
-   of inside the sticky title block above, so it's anchored to the same
-   coordinate space the panel text itself scrolls through, rather than to a
-   separately-computed sticky box whose own position only matches this one
-   because the math says so. A normal flow child (NOT position:absolute —
-   that was tried first, but a sticky element doesn't reliably engage when
-   its direct parent is absolutely positioned, so the child below just
-   scrolled with the page instead of sticking), bounded the same way as
-   .solutions-alt2-left-rail: height set by JS, with a compensating negative
-   margin-bottom so it doesn't shove .solutions-alt2-panels down. */
-.solutions-alt2-panels-fade-rail {
-  position: relative;
-  width: 100%;
-  pointer-events: none;
-}
-
-.solutions-alt2-panels-fade {
-  position: sticky;
-  top: 10vh;
-  height: 96px;
-  background: linear-gradient(to bottom, red 0%, transparent 100%);
-  pointer-events: none;
 }
 
 .solutions-alt2-panel {
@@ -2576,7 +2571,8 @@ button {
    the anchor selector instead of the old fixed 10vh. */
 
 .solutions-alt2-visual-rail {
-  grid-column: span 5;
+  grid-column: 8 / span 5;
+  grid-row: 1;
   position: relative;
 }
 
@@ -2710,12 +2706,16 @@ button {
     position: static;
   }
 
+  .solutions-alt2-panels-fade-rail {
+    display: none;
+  }
+
   .solutions-alt2-scroll-row {
     grid-template-columns: 1fr;
     row-gap: 32px;
   }
 
-  .solutions-alt2-panels-outer {
+  .solutions-alt2-panels {
     grid-column: 1;
   }
 
@@ -2738,10 +2738,6 @@ button {
   }
 
   .solutions-alt2-bottom-mask {
-    display: none;
-  }
-
-  .solutions-alt2-panels-fade-rail {
     display: none;
   }
 
@@ -3833,4 +3829,336 @@ button {
   color: var(--color-text);
   text-decoration: none;
   opacity: 0.8;
+}
+
+/* ==========================================================================
+   SOLUTIONS4 — independent rebuild of the Solutions section.
+   Centering is pure CSS (a single sticky, flex-centered stage); the only JS
+   measurements are copyTrack geometry + one scroll ratio. See solutions4-brief.md.
+   Tunable knobs live on .solutions4-wrapper as custom properties.
+   ========================================================================== */
+.solutions4-wrapper {
+  --s4-buffer: 48px;        /* total gap above the alignment line (hard part + fade) */
+  --s4-top-fade: 44px;      /* of that gap, how much is the actual fade gradient */
+  --s4-fade-drop: 24px;     /* push the top fade down past the line, so copy at the line is still fading */
+  --s4-window: 502px;       /* FIXED masked-window height — sized so the whole inner block is ~700px */
+  --s4-bottom-fade: 56px;   /* soft bottom edge of the copy window */
+  --s4-gap: 24vh;           /* spacing between topics along the copy track */
+  --s4-panels: 4;           /* number of topics — drives the scroller height */
+  --s4-runway-vh: 10;       /* dwell/release runway after the last topic (in vh) */
+  --s4-pad: 56px;           /* vertical breathing room inside the pinned stage */
+  width: 100%;
+  background-color: var(--theme-bg);
+}
+
+/* Tall spacer: one screen per topic plus a short release runway. The runway is
+   the ONLY dead scroll — kept small so the section releases soon after the last
+   topic lands, without changing the copy pacing (active travel = panels-1 screens
+   either way). */
+.solutions4-scroller {
+  height: calc(var(--s4-panels) * 100vh + var(--s4-runway-vh) * 1vh);
+}
+
+/* The single pinned element AND the framed container: grid-frame lives here (not
+   on the inner block) so the vertical grid lines span the full 100vh section
+   instead of only the content's height. Fixed 100vh, content flex-centered, with
+   --s4-pad of breathing room kept inside the lined box. */
+.solutions4-stage {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding-top: var(--s4-pad);
+  padding-bottom: var(--s4-pad);
+}
+
+.solutions4-block {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 24px;
+  width: 100%;
+}
+
+.solutions4-title {
+  margin: 0;
+  width: 100%;
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  font-size: var(--font-size-3xl);
+  line-height: 1;
+  letter-spacing: -1.26px;
+  color: var(--color-headline);
+  word-break: break-word;
+}
+
+.solutions4-title-muted {
+  color: var(--color-text-highlight-1);
+}
+
+.solutions4-subtitle {
+  margin: 0;
+  width: 504px;
+  max-width: 100%;
+  font-family: 'Inter', sans-serif;
+  font-weight: 400;
+  font-size: var(--font-size-md);
+  line-height: 1.4;
+  letter-spacing: -0.18px;
+  color: var(--color-text);
+  opacity: 0.8;
+}
+
+.solutions4-row {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  column-gap: 32px;
+  align-items: start;
+  width: 100%;
+  /* Clearance so the copy window's fade buffer (which extends --s4-buffer
+     ABOVE the alignment line) sits in empty space, not over the subtitle. */
+  margin-top: calc(var(--s4-buffer) + 16px);
+}
+
+/* Static tab list — only the active tab's styling changes; tabs never move. */
+.solutions4-tabs {
+  grid-column: span 2;
+  width: 204px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  padding-top: 4px;
+}
+
+.solutions4-tab {
+  position: relative;
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: none;
+  width: 100%;
+  font-family: 'Fragment Mono', monospace;
+  font-weight: 400;
+  font-size: var(--font-size-2xs);
+  line-height: 1.1;
+  letter-spacing: -0.28px;
+  color: var(--color-text);
+  opacity: 0.2;
+  text-align: left;
+  text-transform: uppercase;
+  word-break: break-word;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+.solutions4-tab--active {
+  opacity: 0.8;
+}
+
+.solutions4-tab::before {
+  content: '';
+  position: absolute;
+  left: -24px;
+  top: 50%;
+  width: 16px;
+  height: 1px;
+  background-color: var(--color-text);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.solutions4-tab--active::before {
+  opacity: 1;
+}
+
+/* Fixed-height window cropped with a soft-edged mask (not a hard overflow
+   cut). The box extends --s4-buffer ABOVE the alignment line; the mask reaches
+   full opacity exactly at that line, so copy is only ever fading in the buffer
+   region above it, never at or after it. */
+.solutions4-copy-window {
+  grid-column: span 5;
+  position: relative;
+  overflow: hidden;
+  min-width: 0;
+  margin-top: calc(-1 * var(--s4-buffer));
+  height: var(--s4-window);
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    transparent 0,
+    transparent calc(var(--s4-buffer) - var(--s4-top-fade) + var(--s4-fade-drop)),
+    #000 calc(var(--s4-buffer) + var(--s4-fade-drop)),
+    #000 calc(100% - var(--s4-bottom-fade)),
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    to bottom,
+    transparent 0,
+    transparent calc(var(--s4-buffer) - var(--s4-top-fade) + var(--s4-fade-drop)),
+    #000 calc(var(--s4-buffer) + var(--s4-fade-drop)),
+    #000 calc(100% - var(--s4-bottom-fade)),
+    transparent 100%
+  );
+}
+
+/* Absolutely positioned so its height never affects layout; JS drives its
+   transform. Positioned ancestor for the headings' offsetTop measurements. */
+.solutions4-copy-track {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: var(--s4-gap);
+  will-change: transform;
+}
+
+.solutions4-copy-panel {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 24px;
+  width: 100%;
+  min-width: 0;
+  word-break: break-word;
+}
+
+.solutions4-copy-heading {
+  margin: 0;
+  width: 100%;
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
+  font-size: var(--font-size-2xl);
+  line-height: 1.1;
+  letter-spacing: -0.64px;
+  color: var(--color-headline);
+}
+
+.solutions4-copy-desc {
+  margin: 0;
+  width: 100%;
+  font-family: 'Inter', sans-serif;
+  font-weight: 400;
+  font-size: var(--font-size-sm);
+  line-height: 1.5;
+  letter-spacing: -0.16px;
+  color: var(--color-text);
+  opacity: 0.8;
+}
+
+.solutions4-copy-bottom {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 40px;
+  width: 80%;
+  text-wrap-style: pretty;
+}
+
+/* Visual window: same push-crossfade mechanic as the original, ported verbatim.
+   Its top sits on the alignment line (row start), level with the tabs and the
+   opaque top of the copy. */
+.solutions4-visual-window {
+  grid-column: span 5;
+  position: relative;
+  /* Starts at the alignment line (no buffer above it), so its height is the
+     window box minus the buffer — bottom then aligns with the copy box bottom. */
+  height: calc(var(--s4-window) - var(--s4-buffer));
+  overflow: hidden;
+  border-radius: 8px;
+}
+
+.solutions4-visual-placeholder {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  padding: 57.6px;
+  overflow: hidden;
+  border-radius: 8px;
+  background-color: var(--color-background-lighter);
+  transform: translateY(100%);
+  transition: transform 0.6s cubic-bezier(0.65, 0, 0.35, 1);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.solutions4-visual-placeholder--offscreen-top {
+  transform: translateY(-100%);
+}
+
+.solutions4-visual-placeholder--active {
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.solutions4-visual-image {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* Below 900px: drop all of it — no sticky, no mask, no transform. Stack
+   title -> tabs (row, wrapped) -> all four panels -> single visual, mirroring
+   the existing .solutions-wrapper / .solutions-alt2-wrapper fallback. */
+@media (max-width: 900px) {
+  .solutions4-scroller {
+    height: auto;
+  }
+
+  .solutions4-stage {
+    position: static;
+    height: auto;
+    display: block;
+    padding-top: 112px;
+    padding-bottom: 112px;
+  }
+
+  .solutions4-block {
+    gap: 32px;
+  }
+
+  .solutions4-row {
+    grid-template-columns: 1fr;
+    row-gap: 32px;
+    margin-top: 0;
+  }
+
+  .solutions4-tabs {
+    grid-column: 1;
+    width: 100%;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 16px 24px;
+  }
+
+  .solutions4-tab::before {
+    display: none;
+  }
+
+  .solutions4-copy-window {
+    grid-column: 1;
+    margin-top: 0;
+    height: auto;
+    overflow: visible;
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+
+  .solutions4-copy-track {
+    position: static;
+    transform: none !important;
+    gap: 48px;
+  }
+
+  .solutions4-visual-window {
+    grid-column: 1;
+    height: 60vh;
+  }
 }
