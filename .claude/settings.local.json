@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__shipstudio-preview__preview_scroll",
+      "mcp__shipstudio-preview__preview_screenshot",
+      "mcp__shipstudio-preview__preview_query",
+      "Bash(sips -c 500 1300 -o crop.png fullpage-1784809586318.png)",
+      "Bash(python3 -c ' *)",
+      "mcp__plugin_figma_figma__get_design_context",
+      "mcp__plugin_figma_figma__get_metadata"
+    ]
+  }
+}

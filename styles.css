@@ -1,0 +1,3247 @@
+:root {
+  /* Theme colors — pulled directly from the Figma file's "theme" variable
+     collection (names below in parens match the Figma variable names 1:1).
+     Every real color on the site should read from one of these; nothing
+     should hardcode a hex/rgb value inline. */
+  --color-text: #0d0d0d;              /* Text */
+  --color-headline: #0d0d0d;          /* Headline */
+  /* CTA Text / CTA Text Inverted — the primary CTA button is a dark fill
+     with light text (cta-text), while secondary buttons, inline links, and
+     badges sit on light surfaces and need dark text (cta-text-inverted).
+     Kept as separate tokens (even though inverted currently equals
+     --color-text) since Figma names them distinctly. */
+  --color-cta-text: #fefdfb;          /* CTA Text */
+  --color-cta-text-inverted: #0d0d0d; /* CTA Text Inverted */
+  --color-text-highlight-1: #8e8d8c;  /* Text Highlight 1 */
+  --color-background: #fefdfb;        /* Background */
+  --color-background-invert: #1e1e1e; /* Background 2 */
+  --color-background-lighter: #f8f8f8;
+  --color-background-light: #efefef;
+  --color-brand: #d5ff02;             /* Brand */
+  --color-cta-secondary: #f4f3f1;     /* CTA Secondary */
+
+  /* CTA Hover 2 — the button hover wash. Figma defines the token itself as
+     fully transparent (rest state); the visible 10%-black tint only
+     appears when a button's ::before fades in via its own `opacity`
+     transition on :hover. So the alpha here is a real, fixed color
+     decision (how strong the wash reads once visible), not a fade — the
+     fade is handled separately via `opacity`, not by animating this alpha. */
+  --color-cta-hover-2: rgba(13, 13, 13, 0.1);
+
+  /* Background 3 — frosted-glass overlay tint, used wherever a blurred
+     backdrop needs a light translucent layer on top (hero video blur,
+     footer menu blur). */
+  --color-background-3: rgba(254, 253, 251, 0.1);
+
+  /* Grid - line 2 — the one dashed-line color used everywhere a grid line
+     appears (section edges, section dividers, logo grid cells). */
+  --color-grid-line: rgba(13, 13, 13, 0.2);
+
+  /* Not in Figma's named theme, but reused enough in the code to deserve a
+     single source of truth: the floating "decision card" mockups' status
+     accent colors, and two subtle tints built from existing theme channels
+     at a different opacity than their token defines. */
+  --color-status-verified-purple: #7b68bf;
+  --color-status-verified-lime: #c8ff00;
+  --color-status-danger: #d32f2f;
+  --color-background-navbar: #f4f3f1; /* Background/Navbar */
+  --color-divider: rgba(142, 141, 140, 0.25);
+  --color-mockup-muted: #bfbfbf;
+  --color-mockup-divider: rgba(13, 13, 13, 0.08);
+
+  /* Theme indirection — every section's background/text/button colors read
+     from these role variables, never straight from the raw theme colors
+     above. A handful of sections (Platform, Big Numbers) are Figma's
+     "inverted" theme: dark background, light text, and buttons that swap
+     which side is filled vs outlined. Applying `.theme-inverted` to a
+     section's wrapper re-points every one of these at once — the section's
+     own markup and every component inside it (headline, body, eyebrow,
+     buttons) stays exactly the same, it just reads different values. This
+     is the reusable alternative to writing a second, parallel "dark"
+     version of each component's CSS. */
+  --theme-bg: var(--color-background);
+  --theme-ink: var(--color-text);
+  --theme-btn-primary-bg: var(--color-text);
+  --theme-btn-primary-text: var(--color-cta-text);
+  /* Grid lines are a translucent dark tint (--color-grid-line) so they read
+     against any light background — but that same dark-on-dark tint is
+     nearly invisible against an inverted section's dark background, the
+     same way it would be if you drew it in dark ink on dark paper. This is
+     the inverted-section swap: a translucent LIGHT tint instead. Used
+     directly (not through another custom property) everywhere it's drawn
+     — nesting it inside a further custom property bakes in whatever
+     --theme-grid-line was active whereever *that* property was declared,
+     not wherever it's actually used, which silently breaks theming the
+     moment it's read from anywhere but that one declaration site. */
+  --theme-grid-line: var(--color-grid-line);
+
+  /* Main grid: every section's content is capped to this width and
+     centered, with this much side padding inside it. Matches the Figma
+     "Middle section" (1256) + its usual 32px inset. */
+  --grid-max-width: 1256px;
+  --grid-padding: 32px;
+
+  /* Figma's own design canvas width. A section's outer wrapper is naturally
+     full-bleed (nothing above it constrains its width), but any decorative
+     content inside it that's sized/positioned as a percentage (floating
+     cards, background art, the hero video) was calibrated against this
+     exact width in Figma — that content needs its own inner wrapper capped
+     to --canvas-width, or it drifts wider on any window over 1440px. */
+  --canvas-width: 1440px;
+
+  /* Font size scale — every real (non-decorative) text size on the site
+     reads from one of these, pulled directly from Figma. Change a value
+     here to retune every use of that size at once. Sizes intentionally
+     frozen to Figma's fixed 1440px design (no fluid/clamp scaling).
+     Excluded on purpose: the section-4 mini "decision card" mockups and
+     the dev-only parallax debug panel — those are one-off decorative UI,
+     not real typographic roles. */
+  --font-size-2xs: 14px;  /* small mono labels: card index tags, solutions tab labels, testimonial/stat attribution role, footer tagline */
+  --font-size-xs: 15px;   /* eyebrows (uppercase mono labels), CTA button label, footer column titles, copyright/legal links */
+  --font-size-sm: 16px;   /* nav links, inline links, body copy, card/panel text, attribution names, footer links */
+  --font-size-md: 18px;   /* section subheads/intro paragraphs, card & feature titles */
+  --font-size-lg: 22px;   /* hero subhead */
+  --font-size-xl: 28px;   /* stats section feature title */
+  --font-size-2xl: 32px;  /* solutions panel heading */
+  --font-size-3xl: 42px;  /* section headlines — every section but the hero */
+  --font-size-4xl: 54px;  /* big stat numbers (stats cards, network stats) */
+  --font-size-5xl: 66px;  /* hero headline */
+}
+
+/* Apply to a section's own full-bleed wrapper (never to a deeply-nested
+   child) to flip it into Figma's "inverted" theme — dark background, light
+   ink, and a primary button that swaps which side is filled. See the
+   --theme-* vars in :root for what this actually overrides. Since the
+   vertical grid lines are now drawn by .grid-frame itself (below) rather
+   than a page-level overlay, this needs no z-index/stacking trick — the
+   frame just reads whatever --theme-grid-line cascades to it. */
+.theme-inverted {
+  --theme-bg: var(--color-background-invert);
+  --theme-ink: var(--color-background);
+  --theme-btn-primary-bg: var(--color-background);
+  --theme-btn-primary-text: var(--color-cta-text-inverted);
+  --theme-grid-line: rgba(254, 253, 251, 0.2);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+}
+
+/* The page itself is a normal fluid-width document — body is simply as wide
+   as the viewport, like any other page. What's fixed is the *content*
+   inside each section: .grid-frame caps it to 1256px and centers it, and
+   a section whose decorative art was calibrated against Figma's 1440px
+   canvas (hero, platform, footer) caps that art the same way via its own
+   .*-canvas wrapper. Section backgrounds need nothing extra to reach the
+   real edges of the browser window — they're full-bleed automatically,
+   because nothing above them constrains their width. */
+html {
+  background-color: var(--color-background);
+}
+
+body {
+  position: relative;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background-color: var(--color-background);
+  color: var(--color-text);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* The 1256px content column — every section's real content lives inside
+   one of these, nested directly in that section's full-bleed wrapper. This
+   is what actually draws the vertical grid lines, as its own left/right
+   edges (a repeating-gradient background, not a border — border-style:
+   dashed has a coarser, fixed dash ratio that doesn't match the rest of
+   the site's grid lines). Padding is the usual 32px inset; a section that
+   needs a different inset (or none) overrides it directly.
+   Because these lines are now owned by each section's own content column
+   instead of a page-spanning overlay, there's no cross-section z-index
+   fight and no separate "inverted" copy to keep in sync — a dark section
+   just needs `.theme-inverted` on its wrapper (see above) and this frame
+   automatically draws the correctly-colored lines, since --theme-grid-line
+   is read directly here with no intervening custom property to go stale. */
+.grid-frame {
+  position: relative;
+  width: 100%;
+  max-width: var(--grid-max-width);
+  margin: 0 auto;
+  padding: 0 var(--grid-padding);
+  background-image:
+    repeating-linear-gradient(to bottom, var(--theme-grid-line) 0, var(--theme-grid-line) 4px, transparent 4px, transparent 8px),
+    repeating-linear-gradient(to bottom, var(--theme-grid-line) 0, var(--theme-grid-line) 4px, transparent 4px, transparent 8px);
+  background-repeat: repeat-y, repeat-y;
+  background-position: left top, right top;
+  background-size: 1px 8px, 1px 8px;
+}
+
+/* Horizontal section dividers — one dashed rule between each section.
+   Every .section-divider host is a genuine full-width wrapper (nothing
+   above it constrains its width), so the line just matches its own parent —
+   no viewport-unit breakout needed anywhere. */
+.section-divider {
+  position: relative;
+}
+
+.section-divider::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 1px;
+  background-image: repeating-linear-gradient(to right, var(--theme-grid-line) 0, var(--theme-grid-line) 4px, transparent 4px, transparent 8px);
+  pointer-events: none;
+  z-index: 4;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+a {
+  color: inherit;
+}
+
+button {
+  font: inherit;
+}
+
+/* Shared button component — used everywhere a CTA appears.
+   Three variants only: primary (filled brand), secondary (filled neutral),
+   inline (text link + arrow). */
+
+/* Fixed dimensions (frozen from the former fluid values at the 1440 design
+   width): the whole button — size, padding, radius, label — is fixed px. */
+.btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  height: 47px;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 6px;
+  overflow: hidden;
+  font-family: 'Fragment Mono', monospace;
+  font-weight: 400;
+  font-style: normal;
+  font-size: var(--font-size-xs);
+  line-height: 1.5;
+  letter-spacing: -0.04em;
+  white-space: nowrap;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+/* Hover tint: a dark overlay that fades in on top of the button's own
+   background-color, rather than swapping to a precomputed flat color —
+   matches the Figma hover spec (10% black wash) and works identically for
+   both variants since it doesn't care what color sits underneath it.
+   ::before paints before the button's real content in stacking order, so it
+   stays behind the label/icon without needing z-index. */
+.btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-color: var(--color-cta-hover-2);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  pointer-events: none;
+}
+
+.btn:hover::before {
+  opacity: 1;
+}
+
+.btn--primary {
+  background-color: var(--theme-btn-primary-bg);
+  color: var(--theme-btn-primary-text);
+}
+
+.btn--secondary {
+  background-color: var(--color-cta-secondary);
+  color: var(--color-cta-text-inverted);
+}
+
+.btn-icon {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
+/* Inline text CTA: label + arrow icon, underline grows in on hover */
+
+.btn--inline {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+  color: var(--color-text);
+  cursor: pointer;
+}
+
+.btn-inline-label {
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
+  font-size: var(--font-size-sm);
+  line-height: 1.5;
+  color: var(--color-cta-text-inverted);
+  white-space: nowrap;
+}
+
+.btn-inline-icon {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
+/* Shared underline hover: every plain text link in the site (nav, login,
+   inline CTAs, footer columns/legal) uses the same mechanic — a 1px bar
+   that always sweeps left-to-right, whether it's growing in on hover or
+   disappearing on mouse-out. That needs different anchors for each
+   direction (grow pinned to the left edge, shrink pinned to the right
+   edge), so transform-origin flips between the rest and :hover rules. It
+   isn't listed in `transition`, so the flip is instant rather than
+   interpolated — harmless because it only ever happens at scaleX(1), where
+   the origin has no visible effect on the rendered geometry.
+   background-color: currentColor means each link's underline automatically
+   matches its own text color (including the footer legal links' reduced
+   opacity) without repeating a color per rule. */
+.menu-link,
+.menu-login-link,
+.btn-inline-label,
+.footer-col-link,
+.copyrights-legal-link {
+  position: relative;
+  display: inline-block;
+}
+
+.menu-link::after,
+.menu-login-link::after,
+.btn-inline-label::after,
+.footer-col-link::after,
+.copyrights-legal-link::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 1px;
+  background-color: currentColor;
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 0.25s ease;
+}
+
+.menu-link:hover::after,
+.menu-login-link:hover::after,
+.btn--inline:hover .btn-inline-label::after,
+.footer-col-link:hover::after,
+.copyrights-legal-link:hover::after {
+  transform: scaleX(1);
+  transform-origin: left;
+}
+/* Hero */
+
+.hero {
+  position: relative;
+  background-color: var(--color-background);
+  isolation: isolate;
+}
+
+/* Caps the grid texture to Figma's 1440px design canvas: .hero-bg-grid-clip
+   (inset:0) is calibrated against exactly that width, so without this
+   wrapper it'd drift outward on any window wider than 1440px. .hero-visual
+   is deliberately NOT inside this — it's sized against the real section
+   width instead, see below. Carries the flex-column + height that used to
+   live on .hero itself, since .hero-content's flex:1 1 auto needs this as
+   its direct parent now. */
+.hero-canvas {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: var(--canvas-width);
+  height: 100%;
+  margin: 0 auto;
+}
+
+
+/* Grid texture layer — a single absolute wrapper the real content
+   (.hero-content) stacks above via z-index. inset:0 spans the whole of
+   .hero-canvas (already capped to the 1440px design canvas), so the grid
+   stays centered on the page. */
+.hero-scenery {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+/* Background grid — same technique as .platform-bg-grid-clip (fade mask on a
+   section-sized clip layer, not on the oversized image, so it's always
+   proportional to the section). Here the gradient is anchored at the top
+   center instead of the middle, and sized with explicit percentages rather
+   than closest-side — closest-side measures to the NEAREST edge, which is
+   degenerate (zero) for a center point sitting right on the top edge. An
+   explicit 50% vertical radius reaches the section's vertical midpoint
+   instead, so the grid only ever occupies roughly the top half. */
+.hero-bg-grid-clip {
+  position: absolute;
+  inset: 0;
+  max-width: var(--grid-max-width);
+  margin: 0 auto;
+  overflow: hidden;
+  pointer-events: none;
+  -webkit-mask-image: radial-gradient(ellipse 70% 50% at 50% 0%, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0.5) 30%, rgba(0, 0, 0, 0) 90%);
+  mask-image: radial-gradient(ellipse 70% 50% at 50% 0%, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0.5) 30%, rgba(0, 0, 0, 0) 90%);
+}
+
+.hero-bg-grid {
+  position: absolute;
+  top: 33%;
+  left: 50%;
+  width: 150%;
+  max-width: none;
+  height: auto;
+  opacity: 0.2;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+/* Frosted glass fade at the bottom of the hero, transitioning to next section.
+   skiper-ui's ProgressiveBlur recipe: a low 4px backdrop-blur, a background
+   gradient fading to the page background color, and a mask gradient that
+   holds the effect through the near 35% and feathers it out over the rest —
+   near the top the mask is transparent so the sharp content shows through
+   untouched, near the bottom it's fully opaque. Sits within .hero-content's
+   own 160px bottom padding (its 80px height is well clear of the CTA row
+   above), so it fades the scenery there instead of blurring the buttons. */
+.hero-fade-overlay {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 80px;
+  backdrop-filter: blur(4px);
+  background: linear-gradient(transparent, var(--color-background));
+  mask-image: linear-gradient(to top, var(--color-background) 35%, transparent);
+  pointer-events: none;
+  z-index: 3;
+}
+
+/* Top navigation bar — its own section, structurally independent of the
+   hero below it (previously nested inside .hero; split out so nav and
+   hero can each be full-bleed sections with their own .grid-frame, matching
+   every other section pair on the page — including the dashed
+   .section-divider under it, same as any other section boundary). */
+.menu-wrapper {
+  position: relative;
+  background-color: var(--theme-bg);
+}
+
+/* Width/margin/vertical-grid-lines come from .grid-frame (applied in the
+   HTML alongside this class); this adds the nav's own top/bottom padding on
+   top of the frame's default 0 32px — 24px top and bottom, matching Figma's
+   symmetric spacing around the nav pill. */
+.menu {
+  padding-top: 24px;
+  padding-bottom: 24px;
+}
+
+/* The nav pill itself — a solid flat surface (Figma's "Background/Navbar"
+   token), not a translucent/blurred overlay: nav no longer floats over the
+   hero's video now that it's a standalone section, so there's nothing left
+   to blur. gap-86 (not the group's own alignment) is what actually spaces
+   the logo, links, and login/CTA groups apart. */
+.menu-inner {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  gap: 86px;
+  padding: 8px;
+  border-radius: 14px;
+  background-color: var(--color-background-navbar);
+  overflow: hidden;
+}
+
+.menu-logo-wrap {
+  display: flex;
+  align-items: center;
+  padding-left: 8px;
+  flex-shrink: 0;
+}
+
+.menu-logo {
+  display: block;
+}
+
+.menu-logo-img {
+  display: block;
+  width: 130px;
+  height: 32px;
+}
+
+.menu-links {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+}
+
+.menu-link {
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-weight: 500;
+  font-size: var(--font-size-sm);
+  line-height: 1.5;
+  color: var(--color-text);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.menu-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 36px;
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+.menu-login-link {
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-weight: 500;
+  font-size: var(--font-size-sm);
+  line-height: 1.5;
+  color: var(--color-text);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+/* Hero content block */
+/* Width/margin/vertical-grid-lines come from .grid-frame (applied in the
+   HTML alongside this class); this only adds hero-content's own layout. */
+/* Vertical padding lives here (on the grid-frame box itself) rather than on
+   .hero — the vertical lines are this element's own background-image, so
+   they only ever span its own box. Padding on the outer .hero would leave
+   the top/bottom margin outside that box, with no lines drawn through it. */
+.hero-content {
+  z-index: 1;
+  flex: 1 1 auto;
+  display: flex;
+  align-items: center;
+  padding-top: 160px;
+  padding-bottom: 160px;
+}
+
+.hero-left {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+  width: 50%;
+}
+
+.hero-heading-group {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.hero-headline-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Now a filled badge (brand background), not plain text — the background
+   must stay fully opaque, so the 70% dim only applies to the text color
+   itself (color-mix), rather than fading the whole element the way most
+   other "muted text" on the site does via `opacity`. */
+.hero-eyebrow {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  margin: 0;
+  padding: 8px 12px;
+  border-radius: 4px;
+  background-color: var(--color-brand);
+  font-family: "Fragment Mono", monospace;
+  font-weight: 400;
+  font-size: var(--font-size-xs);
+  line-height: 1.1;
+  letter-spacing: -0.3px;
+  color: color-mix(in srgb, var(--color-text) 70%, transparent);
+  text-transform: uppercase;
+}
+
+.hero-headline {
+  margin: 0;
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-weight: 700;
+  font-size: var(--font-size-5xl);
+  line-height: 1;
+  letter-spacing: -1.98px;
+}
+
+.hero-headline-dark {
+  color: var(--color-headline);
+}
+
+.hero-headline-gray {
+  color: var(--color-text-highlight-1);
+}
+
+.hero-subhead {
+  margin: 0;
+  display: flex;
+  align-items: baseline;
+  gap: 5px;
+  flex-wrap: wrap;
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-weight: 400;
+  font-size: var(--font-size-lg);
+  line-height: 1.5;
+  letter-spacing: -0.22px;
+  color: var(--color-text);
+  opacity: 0.8;
+}
+
+/* The window each pill slides through. It carries no background of its
+   own — each pill brings its own, since the pill itself (not an inner text
+   strip) is what moves. Width is driven per-pill by JS (see the rotation
+   script) so the badge hugs whichever word is active instead of staying
+   sized to the widest one ("appeasements") the whole time. */
+.hero-highlight-rail {
+  position: relative;
+  display: inline-block;
+  overflow: hidden;
+  height: 1.5em;
+  /* Every pill inside is position:absolute, so the rail has no in-flow line
+     box of its own. Per spec, an inline-block with overflow other than
+     visible always uses its bottom margin edge as its baseline regardless
+     of content, so the parent row's align-items: baseline pins the rail's
+     bottom edge to the sibling text's baseline — sitting noticeably higher
+     than the real baseline. This nudges it back down to match; em (not px)
+     ties the correction to .hero-subhead's own font-size, so it stays right
+     if that size is ever retuned. */
+  top: 0.4em;
+}
+
+/* Base (unset) rests below the window, so the default entrance rises up
+   into place. --exit is applied to the outgoing pill instead of just
+   removing --active, so it keeps rising up and out rather than resetting
+   back to this resting position. The resting/exit distance is pushed past
+   100% on purpose: at exactly 100% the outgoing pill's bottom edge and the
+   incoming pill's top edge would touch throughout the whole transition,
+   and since they're the same green, that reads as one continuous strip
+   instead of two separate pills. The extra travel opens a real gap
+   (revealing the page background) between them as they pass, so it's
+   unmistakably two separate pills swapping places, not a strip scrolling. */
+.hero-highlight-pill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: inline-flex;
+  align-items: flex-start;
+  padding: 0 6px;
+  border-radius: 4px;
+  background-color: var(--color-brand);
+  font-weight: 600;
+  color: var(--color-text);
+  line-height: 1.5;
+  white-space: nowrap;
+  transform: translateY(220%);
+  transition: transform 500ms cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+.hero-highlight-pill--exit {
+  transform: translateY(-220%);
+}
+
+.hero-highlight-pill--active {
+  transform: translateY(0);
+}
+
+.hero-cta-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+/* Right-hand video layer: a direct child of .hero (not the 1440px-capped
+   .hero-canvas), so right:0/width:50% is relative to the actual section —
+   a true half of the screen at any window width, not half of the canvas. */
+.hero-visual {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 60%;
+  height: 100%;
+  overflow: hidden;
+  box-sizing: border-box;
+  mix-blend-mode: multiply;
+}
+
+.hero-visual-video {
+  display: block;
+  width: auto;
+  height: 110%;
+  object-fit: cover;
+  /* Pins the crop to the left edge of this div and biased slightly down
+     from the top, instead of the default center crop. */
+  object-position: left 0%;
+}
+
+@media (max-width: 1024px) {
+  .hero {
+    height: auto;
+  }
+
+  .hero-content {
+    padding: 48px 32px;
+  }
+
+  .hero-left {
+    max-width: none;
+  }
+
+  .hero-visual {
+    position: static;
+    width: 100%;
+    height: 320px;
+  }
+
+  .menu-inner {
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+
+  .menu-links {
+    order: 3;
+    width: 100%;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 720px) {
+  .menu {
+    padding: 16px 20px;
+  }
+
+  .hero-headline {
+    font-size: 38px;
+    letter-spacing: -1px;
+  }
+
+  .hero-cta-row {
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .hero-fade-overlay {
+    height: 120px;
+  }
+}
+/* Social proof — trusted-by logo strip */
+
+/* Outer full-width wrapper (carries .section-divider and the background)
+   + inner .grid-frame (applied alongside .social-proof-trusted in the HTML)
+   for the 1256px content column — same two-layer pattern every section
+   uses, so the divider is never narrower than the page and a themed
+   background is a one-line change away if this section ever needs one. */
+.social-proof-wrapper {
+  width: 100%;
+  background-color: var(--theme-bg);
+}
+
+/* Width/margin/vertical-grid-lines come from .grid-frame; this overrides
+   the frame's default 32px side padding down to 0 (the logo grid's own
+   cell borders form the visual edge, flush with the 1256px grid) and adds
+   the top padding. */
+.social-proof-trusted {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 40px;
+  padding: 120px 0 0;
+  isolation: isolate;
+}
+
+.social-proof-heading-group {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  text-align: center;
+}
+
+.social-proof-eyebrow {
+  margin: 0;
+  font-family: 'Fragment Mono', monospace;
+  font-weight: 400;
+  font-size: var(--font-size-xs);
+  line-height: 1.1;
+  letter-spacing: -0.3px;
+  opacity: 0.7;
+  color: var(--color-text);
+  text-transform: uppercase;
+}
+
+/* Same heading-group "logic" as section 4 (eyebrow + headline, muted span
+   on part of the text). */
+.social-proof-headline {
+  margin: 0;
+  font-family: 'Inter', Arial, sans-serif;
+  font-weight: 700;
+  font-size: var(--font-size-3xl);
+  line-height: 1.1;
+  letter-spacing: -1.26px;
+  color: var(--color-headline);
+}
+
+.social-proof-headline-muted {
+  color: var(--color-text-highlight-1);
+}
+
+/* Single unified logo grid — no more per-cluster labels. Dashed borders on
+   the cells themselves draw the grid lines (vertical between columns,
+   horizontal between rows), so no separate decorative background layer
+   or JS position-sync is needed anymore. */
+.social-proof-logo-grid {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  width: 100%;
+  background-image: repeating-linear-gradient(to right, var(--theme-grid-line) 0, var(--theme-grid-line) 4px, transparent 4px, transparent 8px);
+  background-repeat: repeat-x;
+  background-size: 8px 1px;
+  background-position: left top;
+}
+
+/* Cell dividers use the same repeating-gradient recipe as .grid-frame and
+   .section-divider (background-image, not border-style:dashed) — the
+   `dashed` border keyword draws a visibly coarser, differently-spaced dash
+   than this, which used to make the logo grid's lines look inconsistent
+   with the vertical/horizontal lines everywhere else on the page. Read
+   directly from --theme-grid-line (not through an intermediate property)
+   for the same reason .grid-frame does: a nested custom property bakes in
+   whatever value was active at its declaration site, not at each cell that
+   reads it. */
+.social-proof-cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 96px;
+  padding: 8px;
+  background-image: repeating-linear-gradient(to bottom, var(--theme-grid-line) 0, var(--theme-grid-line) 4px, transparent 4px, transparent 8px);
+  background-repeat: repeat-y;
+  background-size: 1px 8px;
+  background-position: right top;
+}
+
+.social-proof-cell:nth-child(5n) {
+  background-image: none;
+}
+
+.social-proof-cell:nth-child(n + 6) {
+  background-image:
+    repeating-linear-gradient(to bottom, var(--theme-grid-line) 0, var(--theme-grid-line) 4px, transparent 4px, transparent 8px),
+    repeating-linear-gradient(to right, var(--theme-grid-line) 0, var(--theme-grid-line) 4px, transparent 4px, transparent 8px);
+  background-repeat: repeat-y, repeat-x;
+  background-size: 1px 8px, 8px 1px;
+  background-position: right top, left top;
+}
+
+.social-proof-cell:nth-child(5n):nth-child(n + 6) {
+  background-image: repeating-linear-gradient(to right, var(--theme-grid-line) 0, var(--theme-grid-line) 4px, transparent 4px, transparent 8px);
+  background-repeat: repeat-x;
+  background-size: 8px 1px;
+  background-position: left top;
+}
+
+.social-proof-logo-img {
+  display: block;
+  width: 100%;
+  /* Explicit height (not auto) so this is robust regardless of a given
+     SVG's own intrinsic sizing — some exported logo assets set
+     width/height="100%" with preserveAspectRatio="none" on their own root,
+     which defeats aspect-ratio-from-viewBox auto-height. Fully determining
+     the box via width+height and letting object-fit do the containing
+     works the same for every logo either way.
+     Note: Huda Beauty / Ferguson Home / Vuori / Mango render visibly
+     bigger/bolder than the rest here — that's not a sizing bug, it matches
+     Figma's own rendering of this section. Those 4 are tight, unpadded
+     Figma-layer exports, while the rest of the set shares one padded
+     223x121 canvas that keeps them all reading at a consistent weight.
+     The inconsistency exists in the source design itself. */
+  height: 100%;
+  object-fit: contain;
+}
+
+@media (max-width: 900px) {
+  .social-proof-trusted {
+    padding: 64px 24px;
+  }
+
+  .social-proof-logo-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 32px;
+  }
+}
+
+@media (max-width: 560px) {
+  .social-proof-logo-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* Pain points — "AI has made good and bad customers look identical" */
+
+/* Outer full-width wrapper (carries .section-divider and the background)
+   + inner .grid-frame (applied alongside .pain-points-block in the HTML)
+   for the 1256px content column — same two-layer pattern every section
+   uses, so the divider is never narrower than the page and a themed
+   background is a one-line change away if this section ever needs one. */
+.pain-points-wrapper {
+  width: 100%;
+  background-color: var(--theme-bg);
+}
+
+/* Width/margin/vertical-grid-lines come from .grid-frame. */
+.pain-points-block {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 56px;
+  padding: 112px var(--grid-padding);
+}
+
+/* Intro: headline + subhead + CTA */
+
+.pain-points-intro {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 24px;
+  width: 100%;
+}
+
+.pain-points-headline-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
+}
+
+.pain-points-headline {
+  margin: 0;
+  width: 100%;
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  font-style: normal;
+  font-size: var(--font-size-3xl);
+  line-height: 1;
+  letter-spacing: -1.26px;
+  color: var(--color-headline);
+  word-break: break-word;
+}
+
+.pain-points-headline-muted {
+  color: var(--color-text-highlight-1);
+}
+
+.pain-points-subhead-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 24px;
+}
+
+.pain-points-subhead {
+  margin: 0;
+  font-family: 'Inter', sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  font-size: var(--font-size-md);
+  line-height: 1.4;
+  letter-spacing: -0.18px;
+  color: var(--color-text);
+  opacity: 0.8;
+  white-space: nowrap;
+}
+
+/* Card grid */
+
+.pain-points-cards {
+  display: flex;
+  align-items: flex-start;
+  gap: 32px;
+  width: 100%;
+}
+
+.pain-points-card {
+  display: flex;
+  flex: 1 0 0;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 28.8px;
+  min-width: 0;
+  border-radius: 4px;
+}
+
+.pain-points-card-tag {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  font-family: 'Fragment Mono', monospace;
+  font-weight: 400;
+  font-style: normal;
+  font-size: var(--font-size-2xs);
+  line-height: 1.1;
+  letter-spacing: -0.28px;
+  color: var(--color-text);
+}
+
+.pain-points-card-tag-index {
+  margin: 0;
+  width: 40px;
+  opacity: 0.8;
+}
+
+.pain-points-card-tag-label {
+  margin: 0;
+  flex: 1 0 0;
+  min-width: 0;
+  opacity: 0.8;
+}
+
+.pain-points-card-media {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  width: 100%;
+  aspect-ratio: 424 / 452;
+  padding: 16px;
+  border-radius: 4px;
+  background-color: var(--color-background-lighter);
+}
+
+.pain-points-card-image {
+  display: block;
+  width: 100%;
+  height: auto;
+  pointer-events: none;
+}
+
+.pain-points-card-copy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 16px;
+  width: 100%;
+  padding-top: 8px;
+  line-height: 1.5;
+}
+
+.pain-points-card-title {
+  margin: 0;
+  width: 100%;
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
+  font-style: normal;
+  font-size: var(--font-size-md);
+  letter-spacing: -0.36px;
+  color: var(--color-headline);
+}
+
+.pain-points-card-text {
+  margin: 0;
+  width: 100%;
+  font-family: 'Inter', sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  font-size: var(--font-size-sm);
+  letter-spacing: -0.208px;
+  color: var(--color-text);
+  opacity: 0.8;
+}
+
+/* Responsive */
+
+@media (max-width: 1024px) {
+  .pain-points-headline {
+    font-size: 48px;
+    letter-spacing: -1.44px;
+  }
+
+  .pain-points-cards {
+    flex-direction: column;
+  }
+
+  .pain-points-card {
+    width: 100%;
+  }
+}
+
+@media (max-width: 640px) {
+  .pain-points-block {
+    padding: 64px 24px;
+    gap: 40px;
+  }
+
+  .pain-points-headline {
+    font-size: 36px;
+    letter-spacing: -1px;
+  }
+
+  .pain-points-subhead {
+    white-space: normal;
+  }
+}
+/* Platform (floating decision cards) */
+
+/* True full-bleed section, flush against the sections above/below (no
+   vertical margin, no rounded corners, matching Figma exactly) — height is
+   content-driven via .platform-frame's own top/bottom padding rather than
+   a fixed box height, so .platform-frame's own grid-line background (drawn
+   by .grid-frame) always spans the section's full height with no gap at
+   top or bottom, whatever the content's natural size turns out to be. */
+.platform-wrapper {
+  position: relative;
+  background-color: var(--theme-bg);
+  font-family: 'Inter', Arial, sans-serif;
+  color: var(--theme-ink);
+  isolation: isolate;
+}
+
+/* Caps the decorative background grid and floating decision cards to
+   Figma's 1440px design canvas, so their percentage-based positions stay
+   put on a window wider than that — .platform-wrapper itself is naturally
+   full-bleed already (nothing above it constrains its width), this is only
+   for the content that was calibrated to a specific pixel width. */
+.platform-canvas {
+  position: relative;
+  width: 100%;
+  max-width: var(--canvas-width);
+  margin: 0 auto;
+}
+
+/* Only the background grid needs clipping to the section's own bounds
+   (it's an oversized fixed-size layer) — kept in its own layer so the
+   floating cards below can bleed past the section's top/bottom edges
+   during parallax instead of getting clipped.
+   The fade mask lives here rather than on the image itself, so it's always
+   sized to the section's own box (a gradient mask defaults to 100% of its
+   element's box) regardless of viewport or the image's native dimensions —
+   the raw grid lines never show a hard edge, they just fade out before the
+   section boundary. `closest-side` (rather than the default farthest-corner)
+   ties the ellipse's radius to each edge independently, so the fade always
+   reaches full transparency by every edge no matter the section's aspect
+   ratio — a wide short section doesn't leave the top/bottom half-faded. */
+.platform-bg-grid-clip {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+  -webkit-mask-image: radial-gradient(ellipse closest-side at center, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0.5) 70%, rgba(0, 0, 0, 0) 95%);
+  mask-image: radial-gradient(ellipse closest-side at center, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0.5) 70%, rgba(0, 0, 0, 0) 95%);
+}
+
+/* Background grid — plain full-opacity line art, so opacity is toned down
+   here to read as a subtle texture. */
+.platform-bg-grid {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 150%;
+  max-width: none;
+  height: auto;
+  opacity: 0.15;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+/* Floating decision cards layer — above .platform-frame (z-index: 2), not
+   below it: Figma shows these cards sliding freely over the vertical grid
+   lines with no line ever showing through, which needs a higher stacking
+   order than the grid-frame content that draws those lines, not just DOM
+   sibling order. */
+.platform-floating-cards {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 3;
+}
+
+.platform-card {
+  position: absolute;
+  width: 316.41px;
+  border-radius: 8.44px;
+  border: 1px solid var(--platform-card-status-color, transparent);
+  background-color: var(--color-background);
+  box-shadow: 0 7px 7px 0 rgba(0, 0, 0, 0.04), 0 2px 4px 0 rgba(0, 0, 0, 0.04), 0 16px 9px 0 rgba(0, 0, 0, 0.02);
+  overflow: hidden;
+  font-family: 'Inter', Arial, sans-serif;
+  will-change: transform;
+}
+
+.platform-card-inner {
+  position: relative;
+  padding: 16.88px 19.69px 19.69px;
+  display: flex;
+  flex-direction: column;
+  gap: 14.06px;
+}
+
+.platform-card--watch {
+  left: var(--platform-card-left-watch, 4%);
+  top: var(--platform-card-top-watch, 46%);
+  --platform-card-status-color: var(--color-status-verified-purple);
+  transform: translate3d(0, var(--platform-py-watch, 0px), 0) rotate(-2deg) scale(var(--platform-card-scale-watch, 1));
+}
+
+.platform-card--ring {
+  left: var(--platform-card-left-ring, 77%);
+  top: var(--platform-card-top-ring, 60%);
+  --platform-card-status-color: var(--color-status-verified-lime);
+  transform: translate3d(0, var(--platform-py-ring, 0px), 0) rotate(4deg) scale(var(--platform-card-scale-ring, 1.15));
+}
+
+.platform-card--console {
+  left: var(--platform-card-left-console, 66%);
+  top: var(--platform-card-top-console, 12%);
+  --platform-card-status-color: var(--color-status-danger);
+  transform: translate3d(0, var(--platform-py-console, 0px), 0) rotate(-2deg) scale(var(--platform-card-scale-console, 0.85));
+}
+
+.platform-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 11.25px;
+  font-family: 'Fragment Mono', 'Courier New', monospace;
+  font-size: 9.14px;
+  letter-spacing: 0.02em;
+  color: var(--color-text);
+  white-space: nowrap;
+}
+
+.platform-card-status {
+  display: flex;
+  align-items: center;
+  gap: 5.62px;
+}
+
+.platform-card-status-dot {
+  width: 7.03px;
+  height: 7.03px;
+  border-radius: 1.41px;
+  background-color: var(--platform-card-status-color, currentColor);
+  flex-shrink: 0;
+}
+
+.platform-card-main {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 11.25px;
+}
+
+.platform-card-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2.81px;
+}
+
+.platform-card-title {
+  font-size: 21.09px;
+  font-weight: 400;
+  line-height: 1.2;
+  color: var(--color-text);
+  margin: 0;
+}
+
+.platform-card-price {
+  font-size: 18.28px;
+  color: var(--color-mockup-muted);
+  margin: 2.81px 0 0;
+}
+
+.platform-card-thumb {
+  width: 47.81px;
+  height: 47.81px;
+  border-radius: 8.44px;
+  overflow: hidden;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-background-light);
+}
+
+.platform-card-thumb img {
+  width: 55%;
+  height: 55%;
+  object-fit: contain;
+  display: block;
+}
+
+.platform-card-divider {
+  border: none;
+  border-top: 1px solid var(--color-mockup-divider);
+  margin: 0;
+}
+
+.platform-card-ip {
+  font-family: 'Fragment Mono', 'Courier New', monospace;
+  font-size: 9.14px;
+  color: var(--color-text);
+  margin: 0;
+}
+
+.platform-card-score-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 11.25px;
+}
+
+.platform-card-score {
+  display: flex;
+  align-items: baseline;
+  gap: 2.81px;
+}
+
+.platform-card-score-num {
+  font-size: 45px;
+  line-height: 1;
+  color: var(--color-text);
+}
+
+.platform-card-score-num--bad {
+  color: var(--color-status-danger);
+}
+
+.platform-card-score-max {
+  font-size: 9.84px;
+  color: var(--color-mockup-muted);
+}
+
+.platform-card-action {
+  font-size: 11.25px;
+  font-weight: 400;
+  color: var(--color-background);
+  background-color: var(--platform-card-status-color, var(--color-background-invert));
+  padding: 7.03px 16.88px;
+  border-radius: 5.62px;
+  white-space: nowrap;
+}
+
+.platform-card--ring .platform-card-action {
+  color: var(--color-text);
+}
+
+/* Main centered content */
+/* .grid-frame handles the 1256px width + vertical grid lines; this adds
+   platform's own layout on top, plus the symmetric 240px top/bottom padding
+   that gives the section its actual height (240/293/240 in Figma's own
+   "Middle section" column, taken 1:1 — that column is always exactly
+   1256px wide same as --grid-max-width, so its measurements map directly
+   to real pixels with no scaling) — content-driven rather than a fixed box
+   height, so these grid lines always span the full section with no gap at
+   top or bottom. z-index keeps it — and its own grid-line background —
+   above the decorative bg-grid-clip (z-index: 0), but below
+   .platform-floating-cards (z-index: 3), which needs to paint over these
+   grid lines, not sit behind them. */
+.platform-frame {
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 40px;
+  padding: 240px var(--grid-padding);
+}
+
+.platform-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  text-align: center;
+}
+
+.platform-heading-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  width: 1018px;
+  max-width: 100%;
+}
+
+.platform-eyebrow {
+  font-family: 'Fragment Mono', 'Courier New', monospace;
+  font-size: var(--font-size-xs);
+  line-height: 1.1;
+  letter-spacing: -0.3px;
+  opacity: 0.7;
+  color: var(--theme-ink);
+  margin: 0;
+  text-transform: uppercase;
+}
+
+.platform-headline {
+  font-family: 'Inter', Arial, sans-serif;
+  font-weight: 700;
+  font-size: var(--font-size-3xl);
+  line-height: 1;
+  letter-spacing: -1.26px;
+  color: var(--theme-ink);
+  margin: 0;
+  max-width: 21ch;
+}
+
+.platform-headline-muted {
+  color: var(--color-brand);
+}
+
+.platform-body {
+  font-family: 'Inter', Arial, sans-serif;
+  font-size: var(--font-size-md);
+  line-height: 1.5;
+  letter-spacing: -0.18px;
+  opacity: 0.8;
+  color: var(--theme-ink);
+  margin: 0;
+  max-width: 608px;
+}
+
+/* flex-shrink: 0 keeps this button's fixed size (same as every other .btn
+   on the page) intact even if .platform-frame's content ever gets tight —
+   without it, this was one of the things flexbox would shrink first when
+   the wrapper ran out of room. z-index/stacking now comes from .platform-frame
+   itself (the button no longer needs its own, since it's not a direct
+   sibling of the decorative background layers anymore). */
+.platform-frame > .btn {
+  flex-shrink: 0;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .platform-wrapper {
+    padding: 0 32px;
+    min-height: 440px;
+  }
+
+  .platform-headline {
+    font-size: 48px;
+    letter-spacing: -1.4px;
+  }
+
+  .platform-floating-cards {
+    display: none;
+  }
+}
+
+@media (max-width: 600px) {
+  .platform-headline {
+    font-size: 34px;
+    letter-spacing: -1px;
+  }
+
+  .platform-body {
+    font-size: 16px;
+  }
+}
+
+/* TEMP DEBUG — parallax tuning panel, remove once platform parallax values are finalized */
+.platform-parallax-debug {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  z-index: 9999;
+  width: 280px;
+  max-width: calc(1440px - 32px);
+  max-height: calc(100vh - 32px);
+  overflow-y: auto;
+  padding: 10px 12px;
+  background: rgba(20, 20, 20, 0.92);
+  color: #fff;
+  border-radius: 8px;
+  font-family: 'Fragment Mono', 'Courier New', monospace;
+  font-size: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+}
+
+.platform-parallax-debug--hidden {
+  display: none;
+}
+
+.platform-parallax-debug-title {
+  margin: 0;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.platform-parallax-debug-group {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding-top: 6px;
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.platform-parallax-debug-group:first-of-type {
+  padding-top: 0;
+  border-top: none;
+}
+
+.platform-parallax-debug-group-title {
+  margin: 0 0 2px;
+  font-weight: 700;
+  opacity: 0.7;
+}
+
+.platform-parallax-debug-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.platform-parallax-debug-row-label {
+  flex-shrink: 0;
+  width: 92px;
+  white-space: nowrap;
+}
+
+.platform-parallax-debug input[type='range'] {
+  flex: 1;
+  width: auto;
+  min-width: 130px;
+}
+
+.platform-parallax-debug-output {
+  margin: 0;
+  padding: 6px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 4px;
+  white-space: pre-wrap;
+  font-size: 9px;
+  line-height: 1.3;
+}
+
+/* Solutions — Account Integrity / Purchase Optimization / Returns Assurance scrollytelling block */
+
+/* Outer full-width wrapper (carries .section-divider and the background)
+   + inner .grid-frame (applied alongside .solutions-block in the HTML) for
+   the 1256px content column — same two-layer pattern every section uses,
+   so the divider is never narrower than the page and a themed background
+   is a one-line change away if this section ever needs one. */
+.solutions-wrapper {
+  width: 100%;
+  background-color: var(--theme-bg);
+}
+
+/* Width/margin/vertical-grid-lines come from .grid-frame. */
+.solutions-block {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10vh;
+  padding: 112px var(--grid-padding);
+}
+
+/* Left wrapper: headline + subtitle */
+
+.solutions-left-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 24px;
+  width: 100%;
+}
+
+.solutions-title {
+  margin: 0;
+  width: 100%;
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  font-style: normal;
+  font-size: var(--font-size-3xl);
+  line-height: 1;
+  letter-spacing: -1.26px;
+  color: var(--color-headline);
+  word-break: break-word;
+}
+
+.solutions-title-muted {
+  color: var(--color-text-highlight-1);
+}
+
+.solutions-subtitle {
+  margin: 0;
+  width: 504px;
+  max-width: 100%;
+  font-family: 'Inter', sans-serif;
+  font-weight: 400;
+  font-size: var(--font-size-md);
+  line-height: 1.4;
+  letter-spacing: -0.18px;
+  color: var(--color-text);
+  opacity: 0.8;
+}
+
+/* Scroll row: sticky tabs + stacked scrolling panels */
+
+.solutions-scroll-row {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  column-gap: 32px;
+  align-items: start;
+  width: 100%;
+}
+
+/* Rail bounds how far the sticky tabs can travel: its height is set by JS
+   to end at the bottom of the last panel's paragraph, so the tabs unstick
+   there instead of following the page to the bottom of the section. */
+.solutions-tabs-rail {
+  grid-column: span 2;
+  width: 204px;
+  position: relative;
+}
+
+.solutions-tabs-sticky {
+  position: sticky;
+  top: 10vh;
+}
+
+.solutions-tabs {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  padding-top: 4px;
+}
+
+.solutions-tab {
+  position: relative;
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: none;
+  width: 100%;
+  font-family: 'Fragment Mono', monospace;
+  font-weight: 400;
+  font-style: normal;
+  font-size: var(--font-size-2xs);
+  line-height: 1.1;
+  letter-spacing: -0.28px;
+  color: var(--color-text);
+  opacity: 0.2;
+  text-align: left;
+  text-transform: uppercase;
+  word-break: break-word;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+.solutions-tab--active {
+  opacity: 0.8;
+}
+
+.solutions-tab::before {
+  content: '';
+  position: absolute;
+  left: -32px;
+  top: 50%;
+  width: 16px;
+  height: 1px;
+  background-color: var(--color-text);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.solutions-tab--active::before {
+  opacity: 1;
+}
+
+/* Stacked panels */
+
+.solutions-panels {
+  grid-column: span 5;
+  display: flex;
+  flex-direction: column;
+  gap: 50vh;
+  min-width: 0;
+}
+
+.solutions-panel {
+  display: flex;
+  width: 100%;
+}
+
+/* Breathing room before the next section. Not load-bearing for the sticky
+   release timing itself — that's handled in JS by accounting for each
+   sticky element's own height, so this can be any value without affecting
+   when the tabs/visual actually unstick. */
+.solutions-panel:last-child {
+  margin-bottom: 20vh;
+}
+
+.solutions-panel-copy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+  width: 100%;
+  min-width: 0;
+}
+
+.solutions-panel-text {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 24px;
+  width: 100%;
+  word-break: break-word;
+}
+
+.solutions-panel-heading {
+  margin: 0;
+  width: 100%;
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
+  font-style: normal;
+  font-size: var(--font-size-2xl);
+  line-height: 1.1;
+  letter-spacing: -0.64px;
+  color: var(--color-headline);
+  /* Matches the sticky sidebar's `top` offset so scrollIntoView({block:'start'})
+     lands the heading at the same line where the tab indicator swaps. */
+  scroll-margin-top: 10vh;
+}
+
+.solutions-panel-desc {
+  margin: 0;
+  width: 100%;
+  font-family: 'Inter', sans-serif;
+  font-weight: 400;
+  font-size: var(--font-size-sm);
+  line-height: 1.5;
+  letter-spacing: -0.16px;
+  color: var(--color-text);
+  opacity: 0.8;
+}
+
+.solutions-panel-bottom {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 40px;
+  width: 80%;
+  text-wrap-style: pretty;
+}
+
+/* Shared visual rail: one sticky container holding all four images,
+   cross-fading based on which panel is active instead of each panel
+   carrying its own image. Bounded by the same rail-height technique as the
+   tabs, so both unstick together at the end. */
+
+.solutions-visual-rail {
+  grid-column: span 5;
+  position: relative;
+}
+
+.solutions-visual-sticky {
+  position: sticky;
+  top: 10vh;
+  height: 80vh;
+  overflow: hidden;
+}
+
+/* Base (unset) sits just below the visible frame, so the default entrance
+   pushes up into place to match a downward scroll. JS flips the resting
+   side to above (--offscreen-top) for upward-scroll entrances/exits, and
+   drives the actual translateY(0) "active" state so incoming/outgoing
+   panels animate together as one push. */
+.solutions-visual-placeholder {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  padding: 57.6px;
+  overflow: hidden;
+  border-radius: 8px;
+  background-color: var(--color-background-lighter);
+  transform: translateY(100%);
+  transition: transform 0.6s cubic-bezier(0.65, 0, 0.35, 1);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.solutions-visual-placeholder--offscreen-top {
+  transform: translateY(-100%);
+}
+
+.solutions-visual-placeholder--active {
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.solutions-visual-image {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* Responsive */
+
+@media (max-width: 900px) {
+  .solutions-tabs-rail {
+    grid-column: 1;
+    height: auto !important;
+  }
+
+  .solutions-tabs-sticky {
+    position: static;
+  }
+
+  .solutions-scroll-row {
+    grid-template-columns: 1fr;
+    row-gap: 32px;
+  }
+
+  .solutions-panels {
+    grid-column: 1;
+  }
+
+  .solutions-panel {
+    min-height: 0;
+  }
+
+  .solutions-panel:last-child {
+    margin-bottom: 0;
+  }
+
+  .solutions-visual-rail {
+    grid-column: 1;
+    height: auto !important;
+  }
+
+  .solutions-visual-sticky {
+    position: relative;
+    height: 60vh;
+  }
+
+  .solutions-tabs {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 16px 24px;
+  }
+
+  .solutions-tab::before {
+    display: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .solutions-block {
+    padding: 64px 20px;
+  }
+
+  .solutions-title {
+    font-size: 40px;
+    letter-spacing: -1.2px;
+  }
+
+  .solutions-subtitle {
+    width: 100%;
+  }
+}
+
+/* Solutions ALT — exact duplicate of the section above (all classes
+   prefixed solutions-alt- instead of solutions-) kept as a separate,
+   independent copy so a different approach can be tried here without
+   touching or losing the original. Delete this whole block + its HTML
+   counterpart once one approach wins. */
+
+/* Solutions — Account Integrity / Purchase Optimization / Returns Assurance scrollytelling block */
+
+/* Outer full-width wrapper (carries .section-divider and the background)
+   + inner .grid-frame (applied alongside .solutions-alt-block in the HTML) for
+   the 1256px content column — same two-layer pattern every section uses,
+   so the divider is never narrower than the page and a themed background
+   is a one-line change away if this section ever needs one. */
+.solutions-alt-wrapper {
+  width: 100%;
+  background-color: var(--theme-bg);
+}
+
+/* Width/margin/vertical-grid-lines come from .grid-frame. */
+.solutions-alt-block {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10vh;
+  padding: 112px var(--grid-padding);
+}
+
+/* Left wrapper: headline + subtitle */
+
+.solutions-alt-left-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 24px;
+  width: 100%;
+}
+
+.solutions-alt-title {
+  margin: 0;
+  width: 100%;
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  font-style: normal;
+  font-size: var(--font-size-3xl);
+  line-height: 1;
+  letter-spacing: -1.26px;
+  color: var(--color-headline);
+  word-break: break-word;
+}
+
+.solutions-alt-title-muted {
+  color: var(--color-text-highlight-1);
+}
+
+.solutions-alt-subtitle {
+  margin: 0;
+  width: 504px;
+  max-width: 100%;
+  font-family: 'Inter', sans-serif;
+  font-weight: 400;
+  font-size: var(--font-size-md);
+  line-height: 1.4;
+  letter-spacing: -0.18px;
+  color: var(--color-text);
+  opacity: 0.8;
+}
+
+/* Scroll row: sticky tabs + stacked scrolling panels */
+
+.solutions-alt-scroll-row {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  column-gap: 32px;
+  align-items: start;
+  width: 100%;
+}
+
+/* Rail bounds how far the sticky tabs can travel: its height is set by JS
+   to end at the bottom of the last panel's paragraph, so the tabs unstick
+   there instead of following the page to the bottom of the section. */
+.solutions-alt-tabs-rail {
+  grid-column: span 2;
+  width: 204px;
+  position: relative;
+}
+
+.solutions-alt-tabs-sticky {
+  position: sticky;
+  top: 10vh;
+}
+
+.solutions-alt-tabs {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  padding-top: 4px;
+}
+
+.solutions-alt-tab {
+  position: relative;
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: none;
+  width: 100%;
+  font-family: 'Fragment Mono', monospace;
+  font-weight: 400;
+  font-style: normal;
+  font-size: var(--font-size-2xs);
+  line-height: 1.1;
+  letter-spacing: -0.28px;
+  color: var(--color-text);
+  opacity: 0.2;
+  text-align: left;
+  text-transform: uppercase;
+  word-break: break-word;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+.solutions-alt-tab--active {
+  opacity: 0.8;
+}
+
+.solutions-alt-tab::before {
+  content: '';
+  position: absolute;
+  left: -32px;
+  top: 50%;
+  width: 16px;
+  height: 1px;
+  background-color: var(--color-text);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.solutions-alt-tab--active::before {
+  opacity: 1;
+}
+
+/* Stacked panels — each row now carries its own copy + visual side by side
+   (see .solutions-alt-panel-visual below), instead of a separate shared
+   visual column synced via JS, so the 50vh gap (sized for sticky-release
+   scroll distance) is no longer needed — just normal breathing room
+   between rows. */
+
+.solutions-alt-panels {
+  grid-column: span 10;
+  display: flex;
+  flex-direction: column;
+  gap: 160px;
+  min-width: 0;
+}
+
+.solutions-alt-panel {
+  display: flex;
+  align-items: flex-start;
+  height: 400px;
+  gap: 64px;
+  width: 100%;
+}
+
+.solutions-alt-panel-copy {
+  display: flex;
+  flex: 0 0 478px;
+  width: 478px;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+  min-width: 0;
+}
+
+.solutions-alt-panel-text {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 24px;
+  width: 100%;
+  word-break: break-word;
+}
+
+.solutions-alt-panel-heading {
+  margin: 0;
+  width: 100%;
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
+  font-style: normal;
+  font-size: var(--font-size-2xl);
+  line-height: 1.1;
+  letter-spacing: -0.64px;
+  color: var(--color-headline);
+  /* Matches the sticky sidebar's `top` offset so scrollIntoView({block:'start'})
+     lands the heading at the same line where the tab indicator swaps. */
+  scroll-margin-top: 10vh;
+}
+
+.solutions-alt-panel-desc {
+  margin: 0;
+  width: 100%;
+  font-family: 'Inter', sans-serif;
+  font-weight: 400;
+  font-size: var(--font-size-sm);
+  line-height: 1.5;
+  letter-spacing: -0.16px;
+  color: var(--color-text);
+  opacity: 0.8;
+}
+
+.solutions-alt-panel-bottom {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 40px;
+  width: 80%;
+  text-wrap-style: pretty;
+}
+
+/* Per-row visual: each panel now carries its own image container instead
+   of sharing one sticky cross-fading column. Fills the row's own 400px
+   height (set on .solutions-alt-panel) rather than the old shared rail's
+   fixed 80vh. */
+.solutions-alt-panel-visual {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  height: 100%;
+  padding: 57.6px;
+  border-radius: 8px;
+  background-color: var(--color-background-lighter);
+}
+
+.solutions-alt-visual-image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* Responsive */
+
+@media (max-width: 900px) {
+  .solutions-alt-tabs-rail {
+    grid-column: 1;
+    height: auto !important;
+  }
+
+  .solutions-alt-tabs-sticky {
+    position: static;
+  }
+
+  .solutions-alt-scroll-row {
+    grid-template-columns: 1fr;
+    row-gap: 32px;
+  }
+
+  .solutions-alt-panels {
+    grid-column: 1;
+  }
+
+  .solutions-alt-panel {
+    flex-direction: column;
+    align-items: stretch;
+    height: auto;
+    min-height: 0;
+  }
+
+  .solutions-alt-tabs {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 16px 24px;
+  }
+
+  .solutions-alt-tab::before {
+    display: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .solutions-alt-block {
+    padding: 64px 20px;
+  }
+
+  .solutions-alt-title {
+    font-size: 40px;
+    letter-spacing: -1.2px;
+  }
+
+  .solutions-alt-subtitle {
+    width: 100%;
+  }
+}
+
+/* Testimonials carousel */
+
+/* A real .grid-frame after all (applied in the HTML) — the carousel's peek
+   effect turns out not to need a page-edge bleed: centering a 580px slide
+   with 32px gaps inside the ordinary 1256px grid column naturally crops the
+   neighboring slides to exactly Figma's numbers (a 580px slide centered
+   next to another 580px slide, 32px apart, leaves 1256/2 - 290 - 32 = 274px
+   of it showing past either edge — precisely what Figma's own layout
+   measures). So the whole section — heading, cards, nav — shares one
+   .grid-frame instance and gets both vertical lines for free, instead of
+   the single hand-drawn left line this used to need. */
+.testimonials-block {
+  background-color: var(--color-background-lighter);
+}
+
+.testimonials-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 40px;
+  padding: 120px var(--grid-padding);
+}
+
+.testimonials-heading-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  text-align: center;
+}
+
+.testimonials-heading {
+  margin: 0;
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  font-style: normal;
+  font-size: var(--font-size-3xl);
+  line-height: 1;
+  letter-spacing: -1.26px;
+  color: var(--color-headline);
+}
+
+.testimonials-heading-muted {
+  color: var(--color-text-highlight-1);
+}
+
+.testimonials-subtext {
+  margin: 0;
+  width: 537px;
+  max-width: 100%;
+  font-family: 'Inter', sans-serif;
+  font-weight: 400;
+  font-size: var(--font-size-md);
+  line-height: 1.4;
+  letter-spacing: -0.18px;
+  color: var(--color-text);
+  opacity: 0.8;
+}
+
+.testimonials-nav {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.testimonials-nav-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background-color: var(--color-background-light);
+  border: none;
+  border-radius: 9999px;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+.testimonials-nav-icon {
+  width: 24px;
+  height: 24px;
+  display: block;
+}
+
+/* Cards row (Swiper carousel) */
+/* Breaks out of .grid-frame's own 32px side padding (negative margin +
+   matching width) so the row's own width is the full 1256px grid column,
+   not 1256 - 64 — needed for the centered-slide peek math above to land on
+   Figma's exact numbers. Swiper's own base CSS applies overflow:hidden to
+   the .swiper root, which is what actually crops the peeking side slides;
+   nothing extra needed here for that. */
+.testimonials-cards {
+  position: relative;
+  width: calc(100% + 2 * var(--grid-padding));
+  margin: 0 calc(-1 * var(--grid-padding));
+}
+
+.testimonials-cards .swiper-wrapper {
+  align-items: stretch;
+}
+
+.testimonials-cards .swiper-slide {
+  width: 580px;
+  height: 332px;
+  flex-shrink: 0;
+}
+
+.testimonials-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 48px;
+  align-items: flex-start;
+  width: 100%;
+  height: 100%;
+  padding: 32px;
+  border-radius: 4px;
+  box-sizing: border-box;
+  background-color: var(--color-background);
+  color: var(--color-text);
+  cursor: pointer;
+  transition: background-color 0.25s ease, color 0.25s ease;
+}
+
+.testimonials-card:hover {
+  background-color: var(--color-brand);
+}
+
+.testimonials-quote {
+  margin: 0;
+  width: 100%;
+  font-family: 'Inter', sans-serif;
+  font-style: italic;
+  font-weight: 400;
+  font-size: var(--font-size-sm);
+  line-height: 1.6;
+  letter-spacing: -0.16px;
+  word-break: break-word;
+  color: color-mix(in srgb, var(--color-text) 80%, transparent);
+  transition: color 0.25s ease;
+}
+
+/* Sits above .testimonials-quote-mark (position:relative + z-index gives it a
+   stacking order, since the mark is position:absolute and would otherwise
+   paint on top of static content regardless of DOM order). */
+.testimonials-attribution {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 24px;
+  width: 100%;
+}
+
+.testimonials-avatar {
+  flex-shrink: 0;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  overflow: hidden;
+  background-color: var(--color-background-light);
+}
+
+.testimonials-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.testimonials-attribution-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  flex: 1 0 0;
+  min-width: 0;
+  font-family: 'Fragment Mono', monospace;
+  font-weight: 400;
+  line-height: 1.1;
+  opacity: 0.8;
+  color: var(--color-text);
+  transition: color 0.25s ease;
+}
+
+.testimonials-name {
+  margin: 0;
+  width: 100%;
+  font-size: var(--font-size-sm);
+  letter-spacing: -0.32px;
+}
+
+.testimonials-title {
+  margin: 0;
+  width: 100%;
+  font-size: var(--font-size-2xs);
+  letter-spacing: -0.28px;
+}
+
+/* Decorative quote glyph, positioned behind .testimonials-attribution (which has
+   its own stacking order via position:relative + z-index above) so it
+   peeks out around the photo/name/title instead of covering them.
+   No opacity here — the SVG already bakes in opacity: 0.15; stacking a
+   second 0.15 on top made the effective value ~0.02 (invisible). */
+.testimonials-quote-mark {
+  position: absolute;
+  bottom: 32px;
+  right: 32px;
+  width: 97px;
+  height: 80px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Responsive adjustments */
+
+@media (max-width: 640px) {
+  .testimonials-subtext {
+    width: 100%;
+  }
+
+  .testimonials-heading {
+    font-size: 44px;
+    letter-spacing: -1.3px;
+  }
+
+  .testimonials-cards .swiper-slide {
+    width: 300px;
+  }
+}
+/* Stats — Real numbers. Real guarantee. */
+
+/* Outer full-width wrapper (carries .section-divider and the background)
+   + inner .grid-frame (applied alongside .stats-block in the HTML) for the
+   1256px content column — same two-layer pattern every section uses, so
+   the divider is never narrower than the page and a themed background is
+   a one-line change away if this section ever needs one. */
+.stats-wrapper {
+  width: 100%;
+  background-color: var(--theme-bg);
+}
+
+/* Width/margin/vertical-grid-lines come from .grid-frame. */
+.stats-block {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 56px;
+  padding: 112px var(--grid-padding);
+  font-family: "Inter", sans-serif;
+}
+
+/* Intro row */
+.stats-intro {
+  display: flex;
+  align-items: flex-start;
+  gap: 32px;
+  width: 100%;
+}
+
+.stats-headline {
+  /* flex:2 0 0 keeps this at roughly a 2:1 share of the row against
+     .stats-intro-side, rather than a fixed px width. */
+  flex: 2 0 0;
+  min-width: 0;
+  margin: 0;
+  font-family: "Inter", sans-serif;
+  font-weight: 700;
+  font-size: var(--font-size-3xl);
+  line-height: 1;
+  letter-spacing: -1.26px;
+  color: var(--color-headline);
+}
+
+.stats-headline-muted {
+  color: var(--color-text-highlight-1);
+}
+
+.stats-intro-side {
+  display: flex;
+  flex: 1 0 0;
+  min-width: 0;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 16px;
+  padding: 4px 0;
+}
+
+.stats-subhead {
+  width: 100%;
+  margin: 0;
+  font-family: "Inter", sans-serif;
+  font-weight: 400;
+  font-size: var(--font-size-md);
+  line-height: 1.4;
+  letter-spacing: -0.18px;
+  color: var(--color-text);
+  opacity: 0.8;
+}
+
+/* Content area */
+.stats-content {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 32px;
+  width: 100%;
+}
+
+/* Featured testimonial block */
+.stats-feature {
+  display: flex;
+  align-items: stretch;
+  gap: 32px;
+  width: 100%;
+  padding: 32px;
+  background-color: var(--color-background-lighter);
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+.stats-feature-media {
+  position: relative;
+  flex: 1 0 0;
+  min-width: 0;
+  /* No fixed ratio or height here — its children are all position:absolute,
+     so with align-items:stretch on the row it naturally fills whatever
+     height .stats-feature-copy's content ends up needing, instead of being
+     locked to a ratio that could leave it taller or shorter than the copy. */
+  border-radius: 4px;
+  overflow: hidden;
+  background-color: var(--color-background-light);
+}
+
+.stats-feature-image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.stats-feature-play {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  border-radius: 999px;
+  background-color: color-mix(in srgb, var(--color-background) 90%, transparent);
+  backdrop-filter: blur(5px);
+  cursor: pointer;
+}
+
+.stats-feature-play-icon {
+  width: 24px;
+  height: 24px;
+}
+
+.stats-feature-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  align-items: flex-start;
+  width: 30%;
+  min-width: 0;
+}
+
+.stats-feature-copy-top {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  align-items: flex-start;
+  width: 100%;
+}
+
+.stats-feature-logo {
+  height: 64px;
+  width: auto;
+  display: block;
+}
+
+.stats-feature-text {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  align-items: flex-start;
+  width: 100%;
+}
+
+.stats-feature-title {
+  margin: 0;
+  width: 100%;
+  font-family: "Inter", sans-serif;
+  font-weight: 500;
+  font-size: var(--font-size-xl);
+  line-height: 1.1;
+  letter-spacing: -0.56px;
+  color: var(--color-headline);
+}
+
+.stats-feature-quote {
+  margin: 0;
+  width: 100%;
+  font-family: "Inter", sans-serif;
+  font-style: italic;
+  font-weight: 400;
+  font-size: var(--font-size-sm);
+  line-height: 1.6;
+  letter-spacing: -0.16px;
+  color: var(--color-text);
+  opacity: 0.8;
+}
+
+.stats-feature-attribution {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: flex-start;
+  width: 100%;
+  font-family: "Fragment Mono", monospace;
+  line-height: 1.1;
+  color: var(--color-text);
+}
+
+.stats-feature-name {
+  margin: 0;
+  width: 100%;
+  font-size: var(--font-size-sm);
+  letter-spacing: -0.32px;
+}
+
+.stats-feature-role {
+  margin: 0;
+  width: 100%;
+  font-size: var(--font-size-2xs);
+  letter-spacing: -0.28px;
+}
+
+/* Stat cards row */
+.stats-cards {
+  display: flex;
+  align-items: stretch;
+  gap: 32px;
+  width: 100%;
+}
+
+.stats-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 40px;
+  flex: 1 0 0;
+  min-width: 0;
+  padding: 40px 32px;
+  background-color: var(--color-background-lighter);
+  border-radius: 4px;
+}
+
+.stats-card-top {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 40px;
+  width: 100%;
+}
+
+.stats-card-logo-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.stats-card-logo {
+  display: block;
+  height: 24px;
+  width: auto;
+  max-width: 236px;
+}
+
+.stats-card-stat {
+  margin: 0;
+  width: 100%;
+  font-family: "Inter", sans-serif;
+  font-weight: 600;
+  font-size: var(--font-size-3xl);
+  line-height: 1;
+  letter-spacing: -1.62px;
+  color: var(--color-headline);
+}
+
+.stats-card-bottom {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 24px;
+  width: 100%;
+  justify-content: space-between;
+  height: 100%;
+}
+
+.stats-card-copy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  width: 100%;
+  color: var(--color-text);
+}
+
+.stats-card-title {
+  margin: 0;
+  width: 100%;
+  font-family: "Inter", sans-serif;
+  font-weight: 500;
+  font-size: var(--font-size-md);
+  line-height: 1.5;
+  letter-spacing: -0.18px;
+}
+
+.stats-card-text {
+  margin: 0;
+  width: 100%;
+  font-family: "Inter", sans-serif;
+  font-weight: 400;
+  font-size: var(--font-size-sm);
+  line-height: 1.5;
+  letter-spacing: -0.16px;
+  opacity: 0.8;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1024px) {
+  .stats-intro {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .stats-headline,
+  .stats-subhead {
+    width: 100%;
+  }
+
+  .stats-feature {
+    flex-direction: column;
+  }
+
+  .stats-feature-media {
+    /* .stats-feature switches to column above, so the base flex:1 0 0
+       (meant for the row layout's width) would set a 0 *height*-basis
+       here instead, collapsing the box before aspect-ratio has a width to
+       compute from. Resetting to flex:none lets width:100% + aspect-ratio
+       size it correctly in either direction. */
+    flex: none;
+    width: 100%;
+  }
+
+  .stats-feature-copy {
+    width: 100%;
+    gap: 40px;
+  }
+
+  .stats-cards {
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 640px) {
+  .stats-block {
+    padding: 64px 24px;
+  }
+
+  .stats-headline {
+    font-size: 48px;
+    letter-spacing: -1.44px;
+  }
+}
+/* Big numbers */
+.big-numbers-block {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  background-color: var(--theme-bg);
+}
+
+/* Width/margin/vertical-grid-lines come from .grid-frame (applied
+   alongside this class in the HTML); this adds big-numbers' own layout,
+   plus its 120px top/bottom padding (Figma's own 120/457/120 split within
+   the "Middle section" column, taken 1:1 same as .platform-frame) — this
+   has to live here, not on .big-numbers-block, since that's the element
+   whose own background draws the vertical grid lines: padding it on the
+   outer wrapper instead leaves a 120px gap at each end where the section
+   is dark but the lines haven't started yet. */
+.big-numbers-inner {
+  display: flex;
+  align-items: flex-start;
+  gap: 32px;
+  padding: 120px var(--grid-padding);
+}
+
+/* Left column */
+.big-numbers-left {
+  display: flex;
+  flex: 1 0 0;
+  min-width: 0;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-end;
+  gap: 24px;
+  word-break: break-word;
+}
+
+.big-numbers-heading-group {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-end;
+  gap: 16px;
+  width: 100%;
+}
+
+.big-numbers-eyebrow {
+  margin: 0;
+  font-family: 'Fragment Mono', monospace;
+  font-weight: 400;
+  font-size: var(--font-size-xs);
+  line-height: 1.1;
+  letter-spacing: -0.3px;
+  color: var(--theme-ink);
+  opacity: 0.7;
+  width: 100%;
+  text-transform: uppercase;
+}
+
+.big-numbers-headline {
+  margin: 0;
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  font-size: var(--font-size-3xl);
+  line-height: 1;
+  letter-spacing: -1.26px;
+  color: var(--theme-ink);
+  text-wrap-style: pretty;
+  max-width: 13ch;
+}
+
+.big-numbers-highlight {
+  color: var(--color-brand);
+}
+
+.big-numbers-subtext {
+  margin: 0;
+  max-width: 416px;
+  font-family: 'Inter', sans-serif;
+  font-weight: 400;
+  font-size: var(--font-size-md);
+  line-height: 1.4;
+  letter-spacing: -0.18px;
+  color: var(--theme-ink);
+  opacity: 0.8;
+}
+
+/* Right column */
+.big-numbers-right {
+  display: flex;
+  flex: 1 0 0;
+  min-width: 0;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 40px;
+  padding-top: 33px;
+}
+
+.big-numbers-stat-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 32px;
+  width: 100%;
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--color-divider);
+}
+
+.big-numbers-stat-number {
+  margin: 0;
+  /* flex:310 (paired with .big-numbers-stat-desc-wrap's flex:268) keeps
+     the same ~54/46 split as the original 310px/268px column widths. */
+  flex: 310 0 0;
+  min-width: 0;
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: var(--font-size-4xl);
+  line-height: 1;
+  letter-spacing: -1.62px;
+  color: var(--theme-ink);
+  word-break: break-word;
+}
+
+.big-numbers-stat-desc-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  flex: 268 0 0;
+  min-width: 0;
+  padding-bottom: 4px;
+}
+
+.big-numbers-stat-desc {
+  margin: 0;
+  width: 100%;
+  font-family: 'Inter', sans-serif;
+  font-weight: 400;
+  font-size: var(--font-size-sm);
+  line-height: 1.5;
+  letter-spacing: -0.16px;
+  color: var(--theme-ink);
+  opacity: 0.8;
+  word-break: break-word;
+}
+
+@media (max-width: 900px) {
+  .big-numbers-inner {
+    flex-direction: column;
+    padding: 64px 24px;
+  }
+
+  .big-numbers-headline {
+    font-size: 48px;
+    letter-spacing: -1.4px;
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .big-numbers-subtext {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .big-numbers-right {
+    padding-top: 0;
+    width: 100%;
+  }
+
+  .big-numbers-stat-row {
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .big-numbers-stat-number {
+    flex: 0 1 auto;
+    width: auto;
+  }
+
+  .big-numbers-stat-desc-wrap {
+    flex: 0 1 auto;
+    width: auto;
+  }
+}
+/* Footer */
+.footer {
+  position: relative;
+  background-color: var(--color-background);
+  font-family: 'Inter', sans-serif;
+  color: var(--color-text);
+}
+
+/* Grid texture + globe video as one layer, a direct child of .footer (a
+   sibling of .footer-content, not nested inside it) so it can span the
+   full footer height independently of the content's own box. inset:0
+   gives it the full height of .footer (its containing block); max-width +
+   margin:0 auto caps/centers its width to the 1256px column between the
+   two vertical lines, same as .grid-frame does for in-flow content. Both
+   this and .footer-content are position:relative with z-index:auto, so
+   paint order between them just follows DOM order — .footer-content comes
+   after, so it always wins without needing its own z-index. */
+.footer-scenery {
+  position: absolute;
+  inset: 0;
+  max-width: var(--grid-max-width);
+  margin: 0 auto;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+/* Soft frosted fade over the lower portion of the scenery — blurs the grid
+   texture + globe video as they descend toward the copyright divider,
+   instead of a hard cutoff. A sibling painted after .footer-scenery (so its
+   backdrop-filter picks up the scenery beneath it) and before .footer-content,
+   so it never blurs the actual text or the grid-frame vertical lines —
+   those are drawn by .footer-content, a separate element painted on top of
+   this. */
+.footer-scenery-blur {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: var(--grid-max-width);
+  height: 100%;
+  -webkit-backdrop-filter: blur(80px);
+  backdrop-filter: blur(80px);
+  -webkit-mask-image: linear-gradient(to top, rgba(0, 0, 0, 1) 20%, rgba(0, 0, 0, 0) 100%);
+  mask-image: linear-gradient(to top, rgba(0, 0, 0, 1) 20%, rgba(0, 0, 0, 0) 100%);
+  pointer-events: none;
+}
+
+/* Background grid — same technique as .hero-bg-grid-clip, flipped to anchor
+   at the bottom instead of the top since this section grows from the
+   bottom of the page. */
+.footer-line-grid-clip {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  -webkit-mask-image: radial-gradient(ellipse 100% 100% at 50% 100%, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0.5) 30%, rgba(0, 0, 0, 0) 90%);
+  mask-image: radial-gradient(ellipse 100% 100% at 50% 100%, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0.5) 30%, rgba(0, 0, 0, 0) 90%);
+}
+
+.footer-line-grid {
+  position: absolute;
+  bottom: 37%;
+  left: 50%;
+  width: 150%;
+  max-width: none;
+  height: auto;
+  opacity: 0.3;
+  transform: translate(-50%, 50%);
+  pointer-events: none;
+}
+
+/* ---------- Footer content ---------- */
+
+/* One continuous box (grid-frame gives it the vertical lines) for the CTA
+   block and the columns block together, instead of two separate grid-frame
+   boxes — splitting the vertical-line drawing across two boxes with a gap
+   between them left a gap in the lines too. Overrides grid-frame's default
+   0 32px horizontal padding to 0, since .footer-cta-inner and
+   .footer-columns each manage their own horizontal inset instead. No
+   background of its own — .footer-scenery is a sibling, not a child, so an
+   opaque fill here would paint over it instead of letting it show through;
+   the footer's own background-color underneath is identical anyway. */
+.footer-content {
+  display: flex;
+  flex-direction: column;
+  gap: 160px;
+  padding: 96px 0 80px;
+}
+
+.footer-cta-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 40px;
+  width: 100%;
+  padding: 0 80px;
+}
+
+.footer-cta-heading-group {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  text-align: center;
+}
+
+.footer-cta-heading-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.footer-eyebrow {
+  margin: 0;
+  font-family: 'Fragment Mono', monospace;
+  font-weight: 400;
+  font-size: var(--font-size-xs);
+  line-height: 1.1;
+  letter-spacing: -0.3px;
+  color: var(--color-text);
+  opacity: 0.7;
+  white-space: nowrap;
+  text-transform: uppercase;
+}
+
+.footer-headline {
+  margin: 0;
+  max-width: 100%;
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  font-size: var(--font-size-3xl);
+  line-height: 1.1;
+  letter-spacing: -1.26px;
+  color: var(--color-headline);
+}
+
+.footer-subtext {
+  margin: 0;
+  width: 936px;
+  max-width: 59ch;
+  font-family: 'Inter', sans-serif;
+  font-weight: 400;
+  font-size: var(--font-size-md);
+  line-height: 1.5;
+  letter-spacing: -0.18px;
+  color: var(--color-text);
+  opacity: 0.8;
+}
+
+.footer-cta-buttons {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.footer-btn-fixed {
+  width: 154px;
+}
+
+.footer-globe-anim {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 440px;
+  mix-blend-mode: multiply;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.footer-globe-video {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin: 0 auto;
+}
+
+.footer-columns {
+  display: flex;
+  align-items: flex-start;
+  gap: 32px;
+  width: 100%;
+  padding: 0 var(--grid-padding);
+}
+
+.footer-col {
+  display: flex;
+  flex: 1 0 0;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+  min-width: 0;
+  padding-top: 17px;
+}
+
+.footer-col--brand {
+  gap: 16px;
+  padding-top: 0;
+}
+
+.footer-logo {
+  display: block;
+  width: 162.5px;
+  height: 40px;
+}
+
+.footer-tagline {
+  margin: 0;
+  width: 100%;
+  font-family: 'Inter', sans-serif;
+  font-weight: 400;
+  font-size: var(--font-size-2xs);
+  line-height: 1.5;
+  letter-spacing: -0.14px;
+  color: var(--color-text);
+  opacity: 0.8;
+}
+
+.footer-col-title {
+  margin: 0 0 8px 0;
+  width: 100%;
+  font-family: 'Fragment Mono', monospace;
+  font-weight: 400;
+  font-size: var(--font-size-xs);
+  line-height: 1.1;
+  letter-spacing: -0.3px;
+  color: var(--color-text-highlight-1);
+}
+
+.footer-col-link {
+  margin: 0;
+  font-family: 'Inter', sans-serif;
+  font-weight: 400;
+  font-size: var(--font-size-sm);
+  line-height: 1.5;
+  letter-spacing: -0.16px;
+  color: var(--color-text);
+  text-decoration: none;
+}
+
+/* ---------- Copyrights ---------- */
+/* Its own section — Figma splits Footer and Copyrights into two separate
+   frames, so this is structurally independent (own full-bleed wrapper +
+   .grid-frame), not just a nested row inside the footer. The divider above
+   it is .footer's own .section-divider (the same reusable dashed-line
+   mechanic every other section boundary uses), replacing what used to be a
+   hand-rolled <hr>. */
+.copyrights-wrapper {
+  position: relative;
+  background-color: var(--color-background);
+}
+
+/* Width/margin/vertical-grid-lines come from .grid-frame (applied
+   alongside this class in the HTML); this adds the row's own layout and
+   top/bottom padding on top of the frame's default 0 32px. */
+.copyrights-inner {
+  display: flex;
+  align-items: baseline;
+  gap: 56px;
+  padding: 44px var(--grid-padding);
+  font-size: var(--font-size-xs);
+  color: var(--color-text);
+}
+
+.copyrights-text {
+  flex: 1 0 0;
+  min-width: 0;
+  margin: 0;
+  font-family: 'Fragment Mono', monospace;
+  font-weight: 400;
+  line-height: 1.1;
+  letter-spacing: -0.3px;
+  opacity: 0.7;
+}
+
+.copyrights-legal-links {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 40px;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.copyrights-legal-link {
+  margin: 0;
+  font-family: 'Inter', sans-serif;
+  font-weight: 400;
+  font-size: var(--font-size-xs);
+  line-height: 1.5;
+  letter-spacing: -0.15px;
+  color: var(--color-text);
+  text-decoration: none;
+  opacity: 0.8;
+}

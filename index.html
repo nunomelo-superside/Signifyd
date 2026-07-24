@@ -1,0 +1,1367 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Signifyd — Homepage Redesign</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fragment+Mono:ital@0;1&family=Inter:ital,wght@0,400;0,500;0,700;1,400&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lenis@1/dist/lenis.css" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/lenis@1/dist/lenis.min.js"></script>
+<script>
+  const lenis = new Lenis();
+  function raf(time) {
+    lenis.raf(time);
+    requestAnimationFrame(raf);
+  }
+  requestAnimationFrame(raf);
+</script>
+<header class="menu-wrapper section-divider">
+  <div class="menu grid-frame">
+    <div class="menu-inner">
+      <div class="menu-logo-wrap">
+        <a class="menu-logo" href="/">
+          <img class="menu-logo-img" src="assets/sec1-signifyd-logo.svg" alt="Signifyd" />
+        </a>
+      </div>
+
+      <nav class="menu-links" aria-label="Primary">
+        <a class="menu-link" href="#">Solutions</a>
+        <a class="menu-link" href="#">Customers</a>
+        <a class="menu-link" href="#">Partners</a>
+        <a class="menu-link" href="#">Resources</a>
+        <a class="menu-link" href="#">Company</a>
+      </nav>
+
+      <div class="menu-actions">
+        <a class="menu-login-link" href="#">Login</a>
+        <a class="btn btn--primary" href="#">Talk to an Expert</a>
+      </div>
+    </div>
+  </div>
+</header>
+
+<section class="hero section-divider">
+  <div class="hero-canvas">
+  <!-- Grid texture stays capped to the 1440px design canvas, centered like
+       the rest of .hero-canvas's content. -->
+  <div class="hero-scenery" aria-hidden="true">
+    <div class="hero-bg-grid-clip">
+      <img class="hero-bg-grid" src="assets/assets/grid/Background Texture.svg" alt="" />
+    </div>
+  </div>
+
+  <div class="hero-content grid-frame">
+    <div class="hero-left">
+      <div class="hero-heading-group">
+        <div class="hero-headline-wrapper">
+          <p class="hero-eyebrow">THE AUTONOMOUS COMMERCE ERA</p>
+
+          <h1 class="hero-headline">
+            <span class="hero-headline-dark">Commerce runs</span><br>
+            <span class="hero-headline-dark">on</span> <span class="hero-headline-gray">our decisions</span>
+          </h1>
+        </div>
+
+        <p class="hero-subhead">The only decision engine built for <span class="hero-highlight-rail">
+          <span class="hero-highlight-pill hero-highlight-pill--active" data-word-index="0">login</span>
+          <span class="hero-highlight-pill" data-word-index="1">checkout</span>
+          <span class="hero-highlight-pill" data-word-index="2">returns</span>
+          <span class="hero-highlight-pill" data-word-index="3">appeasements</span>
+          <span class="hero-highlight-pill" data-word-index="4" aria-hidden="true">login</span>
+        </span></p>
+        <script>
+        (() => {
+          const p = document.currentScript.previousElementSibling;
+          const rail = p.querySelector('.hero-highlight-rail');
+          const pills = Array.from(rail.querySelectorAll('.hero-highlight-pill'));
+          const total = pills.length; // last pill duplicates the first, for seamless looping
+          const transitionMs = 500;
+          let index = 0;
+          let zCounter = 1;
+
+          const setWidth = (i, animate) => {
+            rail.style.transition = animate ? `width ${transitionMs}ms cubic-bezier(0.65, 0, 0.35, 1)` : 'none';
+            rail.style.width = `${pills[i].offsetWidth}px`;
+          };
+
+          // Pushes the next pill up into place while the current one keeps
+          // rising and exits above — same push technique used for section
+          // 5's images, just applied to a whole pill (green background
+          // included) instead of a placeholder graphic.
+          const showPill = (i, previousIndex) => {
+            const incoming = pills[i];
+            const outgoing = pills[previousIndex];
+            incoming.style.zIndex = ++zCounter;
+            outgoing.classList.remove('hero-highlight-pill--active');
+            outgoing.classList.add('hero-highlight-pill--exit');
+            incoming.classList.add('hero-highlight-pill--active');
+          };
+
+          const step = () => {
+            const previousIndex = index;
+            index += 1;
+            showPill(index, previousIndex);
+            setWidth(index, true);
+            if (index === total - 1) {
+              // pills[total - 1] duplicates pills[0]. Once the push above
+              // lands on it, snap everything back to the real first pill
+              // with no transition — since it's identical, the reset is
+              // invisible and the rotation reads as a seamless loop instead
+              // of jumping backwards.
+              setTimeout(() => {
+                pills.forEach((pill) => {
+                  pill.style.transition = 'none';
+                  pill.classList.remove('hero-highlight-pill--active', 'hero-highlight-pill--exit');
+                });
+                pills[0].classList.add('hero-highlight-pill--active');
+                void rail.offsetWidth;
+                pills.forEach((pill) => {
+                  pill.style.transition = '';
+                });
+                index = 0;
+                setWidth(index, false);
+              }, transitionMs);
+            }
+          };
+
+          window.addEventListener('resize', () => setWidth(index, false));
+
+          // Measuring pill widths before the webfont finishes loading gives
+          // wrong numbers (the fallback font has different metrics).
+          // Re-measure once fonts are actually ready, on top of the
+          // immediate call so there's no unstyled flash before then.
+          setWidth(index, false);
+          if (document.fonts && document.fonts.ready) {
+            document.fonts.ready.then(() => setWidth(index, false));
+          }
+
+          setInterval(step, 2200);
+        })();
+        </script>
+      </div>
+
+      <div class="hero-cta-row">
+        <a class="btn btn--primary" href="#">Talk to a Product Expert</a>
+        <a class="btn btn--secondary" href="#">
+          <img class="btn-icon" src="assets/sec1-play-icon.svg" alt="" />
+          See the Platform
+        </a>
+      </div>
+    </div>
+  </div>
+  </div>
+  <!-- Video layer, sized against .hero itself (the actual full section
+       width) instead of the 1440px canvas, so it's a true 50% of the
+       screen regardless of window width. -->
+  <div class="hero-visual" aria-hidden="true">
+    <video class="hero-visual-video" src="assets/Vids/256876 - Signifyd - Upper Half Animation_V1_D1.mp4" autoplay loop muted playsinline disablepictureinpicture></video>
+    <div class="hero-fade-overlay"></div>
+  </div>
+</section>
+
+<script>
+(() => {
+  const video = document.querySelector('.hero-visual-video');
+  const tryPlay = () => video.play().catch(() => {});
+  if (video.readyState >= 2) {
+    tryPlay();
+  } else {
+    video.addEventListener('canplay', tryPlay, { once: true });
+  }
+})();
+</script>
+<section class="social-proof-wrapper section-divider">
+  <div class="social-proof-trusted grid-frame">
+  <div class="social-proof-heading-group">
+    <p class="social-proof-eyebrow">THE SIGNIFYD NETWORK</p>
+    <h2 class="social-proof-headline">Trusted by the <span class="social-proof-headline-muted">world's leading</span></h2>
+  </div>
+
+  <div class="social-proof-logo-grid">
+    <div class="social-proof-cell">
+      <img class="social-proof-logo-img" src="assets/sec2-walmart-logo-v2.svg" alt="Walmart">
+    </div>
+    <div class="social-proof-cell">
+      <img class="social-proof-logo-img" src="assets/sec2-rent-the-runway-logo-v2.svg" alt="Rent the Runway">
+    </div>
+    <div class="social-proof-cell">
+      <img class="social-proof-logo-img" src="assets/sec2-lacoste-logo-v2.svg" alt="Lacoste">
+    </div>
+    <div class="social-proof-cell">
+      <img class="social-proof-logo-img" src="assets/sec2-albertsons-logo-v2.svg" alt="Albertsons">
+    </div>
+    <div class="social-proof-cell">
+      <img class="social-proof-logo-img" src="assets/sec2-lenovo-logo-v2.svg" alt="Lenovo">
+    </div>
+
+    <div class="social-proof-cell">
+      <img class="social-proof-logo-img" src="assets/sec2-fiserv-logo-v2.svg" alt="Fiserv">
+    </div>
+    <div class="social-proof-cell">
+      <img class="social-proof-logo-img" src="assets/sec2-bank-of-america-logo-v2.svg" alt="Bank of America">
+    </div>
+    <div class="social-proof-cell">
+      <img class="social-proof-logo-img" src="assets/sec2-discover-logo-v2.svg" alt="Discover">
+    </div>
+    <div class="social-proof-cell">
+      <img class="social-proof-logo-img" src="assets/sec2-chase-logo-v2.svg" alt="Chase">
+    </div>
+    <div class="social-proof-cell">
+      <img class="social-proof-logo-img" src="assets/sec2-synchrony-logo-v2.svg" alt="Synchrony">
+    </div>
+
+    <div class="social-proof-cell">
+      <img class="social-proof-logo-img" src="assets/sec2-hudabeauty-logo-v2.svg" alt="Huda Beauty">
+    </div>
+    <div class="social-proof-cell">
+      <img class="social-proof-logo-img" src="assets/sec2-ferguson-home-logo-v2.svg" alt="Ferguson Home">
+    </div>
+    <div class="social-proof-cell">
+      <img class="social-proof-logo-img" src="assets/sec2-vuori-logo-v2.svg" alt="Vuori">
+    </div>
+    <div class="social-proof-cell">
+      <img class="social-proof-logo-img" src="assets/sec2-samsung-logo-v2.svg" alt="Samsung">
+    </div>
+    <div class="social-proof-cell">
+      <img class="social-proof-logo-img" src="assets/sec2-mango-logo-v2.svg" alt="Mango">
+    </div>
+  </div>
+  </div>
+</section>
+<section class="pain-points-wrapper section-divider">
+  <div class="pain-points-block grid-frame">
+  <div class="pain-points-intro">
+    <div class="pain-points-headline-wrapper">
+      <p class="pain-points-headline">
+        AI has made good and bad<br />
+        customers <span class="pain-points-headline-muted">look identical</span>.
+      </p>
+    </div>
+    <div class="pain-points-subhead-wrapper">
+      <p class="pain-points-subhead">So wrong decisions have never cost more.</p>
+      <button type="button" class="btn btn--primary">Why decisions matter</button>
+    </div>
+  </div>
+
+  <div class="pain-points-cards">
+    <article class="pain-points-card">
+      <div class="pain-points-card-tag">
+        <p class="pain-points-card-tag-index">(01)</p>
+        <p class="pain-points-card-tag-label">IDENTITY</p>
+      </div>
+      <div class="pain-points-card-media">
+        <img src="assets/sec3-image-identity.png" alt="" class="pain-points-card-image" />
+      </div>
+      <div class="pain-points-card-copy">
+        <h3 class="pain-points-card-title">Bad actors don&rsquo;t steal access. They manufacture it.</h3>
+        <p class="pain-points-card-text">AI manufactures convincing identities at scale. Fake accounts, stolen credentials, and fabricated verification bypass controls built for a different era.</p>
+      </div>
+    </article>
+
+    <article class="pain-points-card">
+      <div class="pain-points-card-tag">
+        <p class="pain-points-card-tag-index">(02)</p>
+        <p class="pain-points-card-tag-label">PAYMENTS</p>
+      </div>
+      <div class="pain-points-card-media">
+        <img src="assets/sec3-image-payments.png" alt="" class="pain-points-card-image" />
+      </div>
+      <div class="pain-points-card-copy">
+        <h3 class="pain-points-card-title">You measure fraud losses not the revenue you refused.</h3>
+        <p class="pain-points-card-text">Every fraud model is tuned to minimize what it lets through. Nobody measures what it turns away. False declines cost more than fraud, and they never appear on a fraud report.</p>
+      </div>
+    </article>
+
+    <article class="pain-points-card">
+      <div class="pain-points-card-tag">
+        <p class="pain-points-card-tag-index">(03)</p>
+        <p class="pain-points-card-tag-label">REVERSALS</p>
+      </div>
+      <div class="pain-points-card-media">
+        <img src="assets/sec3-image-reversals.png" alt="" class="pain-points-card-image" />
+      </div>
+      <div class="pain-points-card-copy">
+        <h3 class="pain-points-card-title">The transaction ends. The exposure doesn&rsquo;t.</h3>
+        <p class="pain-points-card-text">Approving a transaction is one decision. What happens after is another: refund abuse, chargebacks, and policy exploitation handled weeks later, with no connection to the original call.</p>
+      </div>
+    </article>
+
+    <article class="pain-points-card">
+      <div class="pain-points-card-tag">
+        <p class="pain-points-card-tag-index">(04)</p>
+        <p class="pain-points-card-tag-label">LOREM IPSUM</p>
+      </div>
+      <div class="pain-points-card-media">
+        <img src="assets/sec3-image-reversals.png" alt="" class="pain-points-card-image" />
+      </div>
+      <div class="pain-points-card-copy">
+        <h3 class="pain-points-card-title">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</h3>
+        <p class="pain-points-card-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua, ut enim ad minim veniam.</p>
+      </div>
+    </article>
+  </div>
+  </div>
+</section>
+<section class="platform-wrapper section-divider theme-inverted">
+  <!-- .platform-canvas caps the decorative background layers and floating
+       cards to Figma's fixed 1440px design width (not the 1256px grid-frame
+       below), matching Figma's "UI" overlay — .platform-wrapper itself is
+       naturally full-bleed already; without this cap, their percentage-based
+       positions would drift outward on any window wider than 1440px. -->
+  <div class="platform-canvas">
+  <div class="platform-bg-grid-clip" aria-hidden="true">
+    <img class="platform-bg-grid" src="assets/sec4-bg-grid-lines-inverted.svg" alt="" />
+  </div>
+
+  <div class="platform-floating-cards" aria-hidden="true">
+    <!-- Card: Apple Watch (identity verified) -->
+    <div class="platform-card platform-card--watch">
+      <div class="platform-card-inner">
+        <div class="platform-card-top">
+          <span class="platform-card-loc">[&#8599;] ROME, ITALY</span>
+          <span class="platform-card-status">
+            <span class="platform-card-status-dot"></span>
+            IDENTITY VERIFIED
+          </span>
+        </div>
+        <div class="platform-card-main">
+          <div class="platform-card-info">
+            <p class="platform-card-title">Apple Watch</p>
+            <p class="platform-card-price">$399</p>
+          </div>
+          <div class="platform-card-thumb">
+            <img src="assets/sec4-watch-glyph.svg" alt="" />
+          </div>
+        </div>
+        <p class="platform-card-ip">2001:DB8:TE3B::7C4P:1V6X:2S1B</p>
+        <hr class="platform-card-divider" />
+        <div class="platform-card-score-row">
+          <div class="platform-card-score">
+            <span class="platform-card-score-num">78</span>
+            <span class="platform-card-score-max">/ 100</span>
+          </div>
+          <span class="platform-card-action">Approved</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card: Engagement Ring (IP verified) -->
+    <div class="platform-card platform-card--ring">
+      <div class="platform-card-inner">
+        <div class="platform-card-top">
+          <span class="platform-card-loc">[&#8599;] NEW YORK CITY, USA</span>
+          <span class="platform-card-status">
+            <span class="platform-card-status-dot"></span>
+            IP VERIFIED
+          </span>
+        </div>
+        <div class="platform-card-main">
+          <div class="platform-card-info">
+            <p class="platform-card-title">Engagement Ring</p>
+            <p class="platform-card-price">$8,570</p>
+          </div>
+          <div class="platform-card-thumb">
+            <img src="assets/sec4-ring-glyph.svg" alt="" />
+          </div>
+        </div>
+        <p class="platform-card-ip">2001:DB8:85A3::8A2E:370:7334</p>
+        <hr class="platform-card-divider" />
+        <div class="platform-card-score-row">
+          <div class="platform-card-score">
+            <span class="platform-card-score-num">91</span>
+            <span class="platform-card-score-max">/ 100</span>
+          </div>
+          <span class="platform-card-action">Approved</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card: PlayStation 5 (IP mismatch, decline) -->
+    <div class="platform-card platform-card--console">
+      <div class="platform-card-inner">
+        <div class="platform-card-top">
+          <span class="platform-card-loc">[&#8599;] TOKYO, JAPAN</span>
+          <span class="platform-card-status">
+            <span class="platform-card-status-dot"></span>
+            IP MISMATCH
+          </span>
+        </div>
+        <div class="platform-card-main">
+          <div class="platform-card-info">
+            <p class="platform-card-title">Playstation 5</p>
+            <p class="platform-card-price">$699</p>
+          </div>
+          <div class="platform-card-thumb">
+            <img src="assets/sec4-console-glyph.svg" alt="" />
+          </div>
+        </div>
+        <p class="platform-card-ip">2001:DB8:CA3E::1A2B:3C4D:5E6F</p>
+        <hr class="platform-card-divider" />
+        <div class="platform-card-score-row">
+          <div class="platform-card-score">
+            <span class="platform-card-score-num platform-card-score-num--bad">24</span>
+            <span class="platform-card-score-max">/ 100</span>
+          </div>
+          <span class="platform-card-action">Decline</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid-frame platform-frame">
+    <div class="platform-content">
+      <div class="platform-heading-group">
+        <p class="platform-eyebrow">THE SIGNIFYD COMMERCE PROTECTION PLATFORM</p>
+        <h2 class="platform-headline">One platform. Every decision. <span class="platform-headline-muted">Guaranteed</span>.</h2>
+      </div>
+      <p class="platform-body">Signifyd resolves identity. Decodes intent. And guarantees the outcome. We've been managing decisions at machine speed since day one, and we're built for exactly the era we're in now.</p>
+    </div>
+
+    <a href="#" class="btn btn--primary">Talk to an Expert</a>
+  </div>
+  </div>
+</section>
+<div class="platform-parallax-debug platform-parallax-debug--hidden" id="platformParallaxDebug">
+  <p class="platform-parallax-debug-title">Sec4 Parallax Tuner</p>
+
+  <div class="platform-parallax-debug-group">
+    <p class="platform-parallax-debug-group-title">Playstation</p>
+    <label class="platform-parallax-debug-row">
+      <span class="platform-parallax-debug-row-label">Left: <span data-value="console-left">64.5</span>%</span>
+      <input type="range" min="0" max="100" step="0.5" value="64.5" data-card="console" data-prop="left" />
+    </label>
+    <label class="platform-parallax-debug-row">
+      <span class="platform-parallax-debug-row-label">Top: <span data-value="console-top">19.5</span>%</span>
+      <input type="range" min="0" max="100" step="0.5" value="19.5" data-card="console" data-prop="top" />
+    </label>
+    <label class="platform-parallax-debug-row">
+      <span class="platform-parallax-debug-row-label">Start: <span data-value="console-start">-6</span>%</span>
+      <input type="range" min="-50" max="50" step="0.5" value="-6" data-card="console" data-prop="start" />
+    </label>
+    <label class="platform-parallax-debug-row">
+      <span class="platform-parallax-debug-row-label">End: <span data-value="console-end">-23</span>%</span>
+      <input type="range" min="-50" max="50" step="0.5" value="-23" data-card="console" data-prop="end" />
+    </label>
+    <label class="platform-parallax-debug-row">
+      <span class="platform-parallax-debug-row-label">Scale: <span data-value="console-scale">0.6</span>x</span>
+      <input type="range" min="0.5" max="1.8" step="0.05" value="0.6" data-card="console" data-prop="scale" />
+    </label>
+  </div>
+
+  <div class="platform-parallax-debug-group">
+    <p class="platform-parallax-debug-group-title">Apple Watch</p>
+    <label class="platform-parallax-debug-row">
+      <span class="platform-parallax-debug-row-label">Left: <span data-value="watch-left">1.5</span>%</span>
+      <input type="range" min="0" max="100" step="0.5" value="1.5" data-card="watch" data-prop="left" />
+    </label>
+    <label class="platform-parallax-debug-row">
+      <span class="platform-parallax-debug-row-label">Top: <span data-value="watch-top">59.5</span>%</span>
+      <input type="range" min="0" max="100" step="0.5" value="59.5" data-card="watch" data-prop="top" />
+    </label>
+    <label class="platform-parallax-debug-row">
+      <span class="platform-parallax-debug-row-label">Start: <span data-value="watch-start">18.5</span>%</span>
+      <input type="range" min="-50" max="50" step="0.5" value="18.5" data-card="watch" data-prop="start" />
+    </label>
+    <label class="platform-parallax-debug-row">
+      <span class="platform-parallax-debug-row-label">End: <span data-value="watch-end">-50</span>%</span>
+      <input type="range" min="-50" max="50" step="0.5" value="-50" data-card="watch" data-prop="end" />
+    </label>
+    <label class="platform-parallax-debug-row">
+      <span class="platform-parallax-debug-row-label">Scale: <span data-value="watch-scale">0.75</span>x</span>
+      <input type="range" min="0.5" max="1.8" step="0.05" value="0.75" data-card="watch" data-prop="scale" />
+    </label>
+  </div>
+
+  <div class="platform-parallax-debug-group">
+    <p class="platform-parallax-debug-group-title">Ring</p>
+    <label class="platform-parallax-debug-row">
+      <span class="platform-parallax-debug-row-label">Left: <span data-value="ring-left">75</span>%</span>
+      <input type="range" min="0" max="100" step="0.5" value="75" data-card="ring" data-prop="left" />
+    </label>
+    <label class="platform-parallax-debug-row">
+      <span class="platform-parallax-debug-row-label">Top: <span data-value="ring-top">55</span>%</span>
+      <input type="range" min="0" max="100" step="0.5" value="55" data-card="ring" data-prop="top" />
+    </label>
+    <label class="platform-parallax-debug-row">
+      <span class="platform-parallax-debug-row-label">Start: <span data-value="ring-start">30</span>%</span>
+      <input type="range" min="-50" max="50" step="0.5" value="30" data-card="ring" data-prop="start" />
+    </label>
+    <label class="platform-parallax-debug-row">
+      <span class="platform-parallax-debug-row-label">End: <span data-value="ring-end">-4</span>%</span>
+      <input type="range" min="-50" max="50" step="0.5" value="-4" data-card="ring" data-prop="end" />
+    </label>
+    <label class="platform-parallax-debug-row">
+      <span class="platform-parallax-debug-row-label">Scale: <span data-value="ring-scale">0.8</span>x</span>
+      <input type="range" min="0.5" max="1.8" step="0.05" value="0.8" data-card="ring" data-prop="scale" />
+    </label>
+  </div>
+
+  <pre class="platform-parallax-debug-output"></pre>
+</div>
+<script>
+(() => {
+  const wrapper = document.querySelector('.platform-wrapper');
+  const cards = {
+    watch: wrapper.querySelector('.platform-card--watch'),
+    ring: wrapper.querySelector('.platform-card--ring'),
+    console: wrapper.querySelector('.platform-card--console'),
+  };
+
+  // left/top = base position (% of the section), same units as the original
+  // CSS. start/end = Y offset (% of the SECTION's own height, not the
+  // viewport's — so the travel distance always looks the same relative to
+  // the section, regardless of how tall or short the screen is) at the
+  // moment the section enters / finishes leaving the viewport. scale = size
+  // multiplier. Progress is linearly interpolated between start and end as
+  // the section scrolls through.
+  const settings = {
+    watch: { left: 1.5, top: 59.5, start: 18.5, end: -50, scale: 0.75 },
+    ring: { left: 75, top: 55, start: 30, end: -4, scale: 0.8 },
+    console: { left: 64.5, top: 19.5, start: -6, end: -23, scale: 0.6 },
+  };
+
+  const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
+  const lerp = (a, b, t) => a + (b - a) * t;
+
+  const applyPosition = (key) => {
+    const { left, top } = settings[key];
+    cards[key].style.setProperty(`--platform-card-left-${key}`, `${left}%`);
+    cards[key].style.setProperty(`--platform-card-top-${key}`, `${top}%`);
+  };
+
+  const updateParallax = () => {
+    const rect = wrapper.getBoundingClientRect();
+    // 0 = section about to enter the bottom of the viewport, 1 = section has
+    // fully scrolled past the top of the viewport. This part stays tied to
+    // the viewport on purpose — it's what makes the effect scroll-linked at
+    // all — only the travel distance below is section-relative.
+    const progress = clamp((window.innerHeight - rect.top) / (window.innerHeight + rect.height), 0, 1);
+    Object.entries(cards).forEach(([key, card]) => {
+      const { start, end, scale } = settings[key];
+      const offsetPx = (lerp(start, end, progress) / 100) * rect.height;
+      card.style.setProperty(`--platform-py-${key}`, `${offsetPx.toFixed(2)}px`);
+      card.style.setProperty(`--platform-card-scale-${key}`, scale);
+    });
+  };
+
+  Object.keys(cards).forEach(applyPosition);
+
+  if (typeof lenis !== 'undefined') {
+    lenis.on('scroll', updateParallax);
+  } else {
+    window.addEventListener('scroll', updateParallax, { passive: true });
+  }
+  window.addEventListener('resize', updateParallax);
+  updateParallax();
+
+  const debugPanel = document.getElementById('platformParallaxDebug');
+  if (debugPanel) {
+    const output = debugPanel.querySelector('.platform-parallax-debug-output');
+    const renderOutput = () => {
+      output.textContent = JSON.stringify(settings, null, 2);
+    };
+    debugPanel.querySelectorAll('input[type="range"]').forEach((input) => {
+      input.addEventListener('input', () => {
+        const { card: key, prop } = input.dataset;
+        settings[key][prop] = Number(input.value);
+        debugPanel.querySelector(`[data-value="${key}-${prop}"]`).textContent = input.value;
+        renderOutput();
+        updateParallax();
+        applyPosition(key);
+      });
+    });
+    renderOutput();
+
+    window.addEventListener('keydown', (event) => {
+      if (event.key.toLowerCase() !== 's' || !event.shiftKey) return;
+      debugPanel.classList.toggle('platform-parallax-debug--hidden');
+    });
+  }
+})();
+</script>
+<section class="solutions-wrapper section-divider">
+  <div class="solutions-block grid-frame">
+  <div class="solutions-left-wrapper">
+    <h2 class="solutions-title">
+      Commerce begins<br />
+      before <span class="solutions-title-muted">the cart</span>.
+    </h2>
+    <p class="solutions-subtitle">The more context you have before checkout, the more confidently you can approve it.</p>
+  </div>
+
+  <div class="solutions-scroll-row">
+    <div class="solutions-tabs-rail">
+      <div class="solutions-tabs-sticky">
+        <nav class="solutions-tabs" aria-label="Feature sections">
+          <button type="button" class="solutions-tab solutions-tab--active" data-panel-index="0">ACCOUNT INTEGRITY</button>
+          <button type="button" class="solutions-tab" data-panel-index="1">PURCHASE OPTIMIZATION</button>
+          <button type="button" class="solutions-tab" data-panel-index="2">RETURNS ASSURANCE</button>
+          <button type="button" class="solutions-tab" data-panel-index="3">LOREM IPSUM</button>
+        </nav>
+      </div>
+    </div>
+
+    <div class="solutions-panels">
+      <article class="solutions-panel" data-panel-index="0">
+        <div class="solutions-panel-copy">
+          <div class="solutions-panel-text">
+            <p class="solutions-panel-heading">
+              Protect every account.<br />
+              From creation to login to modification.
+            </p>
+            <p class="solutions-panel-desc">Most fraud infrastructure is assembled before the first item hits the cart. Fake identities are created, real accounts are taken over, loyalty balances are drained. Signifyd monitors the full account lifecycle, not just the moment of purchase, so the fraudsters who pass every downstream check still can't get through.</p>
+          </div>
+
+          <div class="solutions-panel-bottom">
+            <button type="button" class="btn btn--primary">Learn More</button>
+          </div>
+        </div>
+      </article>
+
+      <article class="solutions-panel" data-panel-index="1">
+        <div class="solutions-panel-copy">
+          <div class="solutions-panel-text">
+            <p class="solutions-panel-heading">Approve more good orders. Stop more bad ones. Guarantee the difference.</p>
+            <p class="solutions-panel-desc">Every order is a binary decision with asymmetric consequences. Approve fraud and you absorb the chargeback. Decline a good customer and you lose the sale, the relationship, and the lifetime value that goes with it. Signifyd resolves identity and intent in milliseconds, then backs every approved order with a financial guarantee, so the risk stays with us, not you.</p>
+          </div>
+
+          <div class="solutions-panel-bottom">
+            <button type="button" class="btn btn--primary">Learn More</button>
+          </div>
+        </div>
+      </article>
+
+      <article class="solutions-panel" data-panel-index="2">
+        <div class="solutions-panel-copy">
+          <div class="solutions-panel-text">
+            <p class="solutions-panel-heading">Easy for the right customers. Hard for everyone else.</p>
+            <p class="solutions-panel-desc">A blanket returns policy is a gift to abusers and a tax on your best customers. Signifyd scores every post-purchase interaction so you can give high-LTV customers an instant refund, and we back it with a financial guarantee. Your appeasements budget stops feeding the abusers. Your call center volume drops. And the customers worth keeping get their money back fast enough to come back.</p>
+          </div>
+
+          <div class="solutions-panel-bottom">
+            <button type="button" class="btn btn--primary">Learn More</button>
+          </div>
+        </div>
+      </article>
+
+      <article class="solutions-panel" data-panel-index="3">
+        <div class="solutions-panel-copy">
+          <div class="solutions-panel-text">
+            <p class="solutions-panel-heading">Quam pellentesque ac nulla lectus pellentesque.</p>
+            <p class="solutions-panel-desc">Id nibh velit porta nulla orci nunc. Molestie lectus viverra et et diam egestas ornare sit. Leo urna quis at enim commodo placerat bibendum. Et euismod hac scelerisque sed justo natoque mauris. Id amet id mauris libero netus massa. Diam velit euismod sit non orci elit. Sollicitudin ac amet condimentum mattis sed tincidunt ultrices.</p>
+          </div>
+
+          <div class="solutions-panel-bottom">
+            <button type="button" class="btn btn--primary">Learn More</button>
+          </div>
+        </div>
+      </article>
+    </div>
+
+    <div class="solutions-visual-rail">
+      <div class="solutions-visual-sticky">
+        <div class="solutions-visual-placeholder solutions-visual-placeholder--active" data-panel-index="0" aria-hidden="true">
+          <img src="assets/sec5-image-account-integrity.png" alt="" class="solutions-visual-image" />
+        </div>
+        <div class="solutions-visual-placeholder" data-panel-index="1" aria-hidden="true">
+          <img src="assets/sec5-image-purchase-optimization.png" alt="" class="solutions-visual-image" />
+        </div>
+        <div class="solutions-visual-placeholder" data-panel-index="2" aria-hidden="true">
+          <img src="assets/sec5-image-returns-assurance.png" alt="" class="solutions-visual-image" />
+        </div>
+        <div class="solutions-visual-placeholder" data-panel-index="3" aria-hidden="true">
+          <img src="assets/sec5-image-returns-assurance.png" alt="" class="solutions-visual-image" />
+        </div>
+      </div>
+    </div>
+  </div>
+  </div>
+</section>
+
+<script>
+(() => {
+  const section = document.currentScript.previousElementSibling;
+  const tabs = section.querySelectorAll('.solutions-tab');
+  const panels = section.querySelectorAll('.solutions-panel');
+  const headings = section.querySelectorAll('.solutions-panel-heading');
+  const rail = section.querySelector('.solutions-tabs-rail');
+  const tabsSticky = section.querySelector('.solutions-tabs-sticky');
+  const visualRail = section.querySelector('.solutions-visual-rail');
+  const visualSticky = section.querySelector('.solutions-visual-sticky');
+  const visualPlaceholders = section.querySelectorAll('.solutions-visual-placeholder');
+
+  // Must match .solutions-tabs-sticky's `top` value (10vh): clicking a tab should
+  // land exactly where the sidebar sits. Computed live since vh depends on
+  // the current viewport height.
+  const getStickyOffset = () => window.innerHeight * 0.1;
+
+  // Where the indicator swaps, direction-aware: scrolling down swaps on the
+  // next heading crossing 50vh from the top. Scrolling up swaps on the
+  // previous heading crossing a small top-anchored line (5vh) instead of a
+  // bottom-anchored one: the panel that's active when a reversal starts
+  // sits at 10vh, so any larger/bottom-anchored offset (e.g. 90vh) requires
+  // ITS OWN heading to travel all the way back down to that line before
+  // re-firing — and since that heading is always closer to any fixed line
+  // than the previous one it should be yielding to, it re-triggers itself
+  // first, well after its content should have already handed off. A line
+  // below 10vh sits behind where the active heading already is, so it
+  // won't re-cross going forward, while the previous heading (re-entering
+  // from above) crosses it promptly. Lower this value to swap even sooner;
+  // it's independent of the sidebar's own 10vh sticky offset above, so
+  // tuning it doesn't move the sidebar or the tab-click landing spot.
+  const getDownTriggerOffset = () => window.innerHeight * 0.5;
+  const getUpTriggerOffset = () => window.innerHeight * 0.05;
+
+  let lastScrollY = window.scrollY;
+  let scrollDirection = 'down';
+  window.addEventListener(
+    'scroll',
+    () => {
+      const currentScrollY = window.scrollY;
+      if (currentScrollY !== lastScrollY) {
+        scrollDirection = currentScrollY > lastScrollY ? 'down' : 'up';
+        lastScrollY = currentScrollY;
+      }
+    },
+    { passive: true }
+  );
+
+  // Pushes the incoming placeholder into place while the outgoing one slides
+  // out ahead of it in the same direction, like a carousel push transition.
+  // The incoming panel is snapped (transition disabled) to its off-screen
+  // starting side first so replays always start from the same spot, then
+  // both panels animate together on the next frame.
+  let zCounter = 1;
+  const getPlaceholder = (index) =>
+    Array.from(visualPlaceholders).find((placeholder) => Number(placeholder.dataset.panelIndex) === index);
+
+  const pushPlaceholders = (incoming, outgoing, direction) => {
+    // Scrolling down pushes up: incoming rises in from below, outgoing keeps
+    // rising and exits above. Scrolling up pushes down: incoming drops in
+    // from above, outgoing keeps dropping and exits below.
+    const enteringFromTop = direction === 'up';
+    incoming.style.zIndex = ++zCounter;
+    incoming.style.transition = 'none';
+    incoming.classList.remove('solutions-visual-placeholder--active');
+    incoming.classList.toggle('solutions-visual-placeholder--offscreen-top', enteringFromTop);
+    void incoming.offsetWidth;
+    incoming.style.transition = '';
+    incoming.classList.add('solutions-visual-placeholder--active');
+
+    if (outgoing && outgoing !== incoming) {
+      outgoing.classList.remove('solutions-visual-placeholder--active');
+      outgoing.classList.toggle('solutions-visual-placeholder--offscreen-top', !enteringFromTop);
+    }
+  };
+
+  let currentActiveIndex = 0;
+  const setActive = (index, direction) => {
+    if (index === currentActiveIndex) return;
+    const resolvedDirection = direction || (index > currentActiveIndex ? 'down' : 'up');
+    const outgoing = getPlaceholder(currentActiveIndex);
+    currentActiveIndex = index;
+
+    tabs.forEach((tab) => {
+      tab.classList.toggle('solutions-tab--active', Number(tab.dataset.panelIndex) === index);
+    });
+    const incoming = getPlaceholder(index);
+    if (incoming) {
+      pushPlaceholders(incoming, outgoing, resolvedDirection);
+    }
+  };
+
+  tabs.forEach((tab) => {
+    tab.addEventListener('click', () => {
+      const index = Number(tab.dataset.panelIndex);
+      setActive(index);
+      headings[index]?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  });
+
+  // Two observers, one per direction, each gated so it only acts while the
+  // page is actually being scrolled that way — otherwise both lines would
+  // fire on every pass and the down-trigger would win regardless of
+  // direction. rootMargin only accepts px/%, not vh, so each offset is
+  // converted to px live and both are rebuilt on resize to stay in sync.
+  //
+  // Both directions map heading[i] directly to panel i — panel i becomes
+  // active exactly when its own heading crosses the trigger line, just at
+  // a different line depending on direction (50vh going down, 90vh going
+  // up).
+  const headingTargets = new Map(Array.from(headings).map((heading, i) => [heading, i]));
+
+  const makeDirectionalObserver = (getOffset, direction, targets) => {
+    const offset = getOffset();
+    const bottomMargin = Math.max(0, window.innerHeight - offset);
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (scrollDirection !== direction) return;
+        entries.forEach((entry) => {
+          if (entry.isIntersecting && targets.has(entry.target)) {
+            setActive(targets.get(entry.target), direction);
+          }
+        });
+      },
+      { rootMargin: `-${offset}px 0px -${bottomMargin}px 0px`, threshold: 0 }
+    );
+    targets.forEach((_, element) => observer.observe(element));
+    return observer;
+  };
+
+  let downObserver = null;
+  let upObserver = null;
+  const setupObservers = () => {
+    if (downObserver) downObserver.disconnect();
+    if (upObserver) upObserver.disconnect();
+    downObserver = makeDirectionalObserver(getDownTriggerOffset, 'down', headingTargets);
+    upObserver = makeDirectionalObserver(getUpTriggerOffset, 'up', headingTargets);
+  };
+
+  setupObservers();
+  window.addEventListener('resize', setupObservers);
+
+  // Rail height bounds how far each sticky element can travel. Native CSS
+  // `position: sticky` doesn't detach abruptly — it starts a gradual release
+  // the moment its containing block (the rail) has less room left than the
+  // sticky element's own height. So binding both rails to the same fixed
+  // point makes the *taller* element (the 80vh visual) start releasing
+  // earlier than the short tabs list unless each element's own height is
+  // folded into its rail's target — that's what the "+ tabsHeight" /
+  // "+ visualHeight" terms below do; they cancel out algebraically, so both
+  // release at the same scroll position regardless of how tall either one
+  // is.
+  //
+  // That release point is anchored to the last heading's own top (not the
+  // panel's bottom): unstick as soon as the last heading reaches the top of
+  // the sticky sidebar/image, rather than waiting for all of its content
+  // (feature list + button) to scroll past first.
+  const lastHeading = headings[headings.length - 1];
+  const updateRailHeight = () => {
+    if (window.innerWidth <= 900) {
+      rail.style.height = '';
+      visualRail.style.height = '';
+      return;
+    }
+    const lastHeadingTop = lastHeading.getBoundingClientRect().top;
+    const tabsHeight = tabsSticky.getBoundingClientRect().height;
+    const visualHeight = visualSticky.getBoundingClientRect().height;
+    rail.style.height = `${Math.max(0, lastHeadingTop - rail.getBoundingClientRect().top + tabsHeight)}px`;
+    visualRail.style.height = `${Math.max(0, lastHeadingTop - visualRail.getBoundingClientRect().top + visualHeight)}px`;
+  };
+
+  updateRailHeight();
+  window.addEventListener('resize', updateRailHeight);
+  window.addEventListener('load', updateRailHeight);
+  if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(updateRailHeight);
+  }
+})();
+</script>
+
+<!-- ALT — exact duplicate of the .solutions-wrapper section above (all
+     classes prefixed solutions-alt- instead of solutions-), kept as a
+     separate, independent copy to try a different approach without
+     touching or losing the original. Delete this whole section + its CSS
+     counterpart once one approach wins. -->
+<section class="solutions-alt-wrapper section-divider">
+  <div class="solutions-alt-block grid-frame">
+  <div class="solutions-alt-left-wrapper">
+    <h2 class="solutions-alt-title">
+      Commerce begins<br />
+      before <span class="solutions-alt-title-muted">the cart</span>.
+    </h2>
+    <p class="solutions-alt-subtitle">The more context you have before checkout, the more confidently you can approve it.</p>
+  </div>
+
+  <div class="solutions-alt-scroll-row">
+    <div class="solutions-alt-tabs-rail">
+      <div class="solutions-alt-tabs-sticky">
+        <nav class="solutions-alt-tabs" aria-label="Feature sections">
+          <button type="button" class="solutions-alt-tab solutions-alt-tab--active" data-panel-index="0">ACCOUNT INTEGRITY</button>
+          <button type="button" class="solutions-alt-tab" data-panel-index="1">PURCHASE OPTIMIZATION</button>
+          <button type="button" class="solutions-alt-tab" data-panel-index="2">RETURNS ASSURANCE</button>
+          <button type="button" class="solutions-alt-tab" data-panel-index="3">LOREM IPSUM</button>
+        </nav>
+      </div>
+    </div>
+
+    <div class="solutions-alt-panels">
+      <article class="solutions-alt-panel" data-panel-index="0">
+        <div class="solutions-alt-panel-copy">
+          <div class="solutions-alt-panel-text">
+            <p class="solutions-alt-panel-heading">
+              Protect every account.<br />
+              From creation to login to modification.
+            </p>
+            <p class="solutions-alt-panel-desc">Most fraud infrastructure is assembled before the first item hits the cart. Fake identities are created, real accounts are taken over, loyalty balances are drained. Signifyd monitors the full account lifecycle, not just the moment of purchase, so the fraudsters who pass every downstream check still can't get through.</p>
+          </div>
+
+          <div class="solutions-alt-panel-bottom">
+            <button type="button" class="btn btn--primary">Learn More</button>
+          </div>
+        </div>
+        <div class="solutions-alt-panel-visual">
+          <img src="assets/sec5-image-account-integrity.png" alt="" class="solutions-alt-visual-image" />
+        </div>
+      </article>
+
+      <article class="solutions-alt-panel" data-panel-index="1">
+        <div class="solutions-alt-panel-copy">
+          <div class="solutions-alt-panel-text">
+            <p class="solutions-alt-panel-heading">Approve more good orders. Stop more bad ones. Guarantee the difference.</p>
+            <p class="solutions-alt-panel-desc">Every order is a binary decision with asymmetric consequences. Approve fraud and you absorb the chargeback. Decline a good customer and you lose the sale, the relationship, and the lifetime value that goes with it. Signifyd resolves identity and intent in milliseconds, then backs every approved order with a financial guarantee, so the risk stays with us, not you.</p>
+          </div>
+
+          <div class="solutions-alt-panel-bottom">
+            <button type="button" class="btn btn--primary">Learn More</button>
+          </div>
+        </div>
+        <div class="solutions-alt-panel-visual">
+          <img src="assets/sec5-image-purchase-optimization.png" alt="" class="solutions-alt-visual-image" />
+        </div>
+      </article>
+
+      <article class="solutions-alt-panel" data-panel-index="2">
+        <div class="solutions-alt-panel-copy">
+          <div class="solutions-alt-panel-text">
+            <p class="solutions-alt-panel-heading">Easy for the right customers. Hard for everyone else.</p>
+            <p class="solutions-alt-panel-desc">A blanket returns policy is a gift to abusers and a tax on your best customers. Signifyd scores every post-purchase interaction so you can give high-LTV customers an instant refund, and we back it with a financial guarantee. Your appeasements budget stops feeding the abusers. Your call center volume drops. And the customers worth keeping get their money back fast enough to come back.</p>
+          </div>
+
+          <div class="solutions-alt-panel-bottom">
+            <button type="button" class="btn btn--primary">Learn More</button>
+          </div>
+        </div>
+        <div class="solutions-alt-panel-visual">
+          <img src="assets/sec5-image-returns-assurance.png" alt="" class="solutions-alt-visual-image" />
+        </div>
+      </article>
+
+      <article class="solutions-alt-panel" data-panel-index="3">
+        <div class="solutions-alt-panel-copy">
+          <div class="solutions-alt-panel-text">
+            <p class="solutions-alt-panel-heading">Quam pellentesque ac nulla lectus pellentesque.</p>
+            <p class="solutions-alt-panel-desc">Id nibh velit porta nulla orci nunc. Molestie lectus viverra et et diam egestas ornare sit. Leo urna quis at enim commodo placerat bibendum. Et euismod hac scelerisque sed justo natoque mauris. Id amet id mauris libero netus massa. Diam velit euismod sit non orci elit. Sollicitudin ac amet condimentum mattis sed tincidunt ultrices.</p>
+          </div>
+
+          <div class="solutions-alt-panel-bottom">
+            <button type="button" class="btn btn--primary">Learn More</button>
+          </div>
+        </div>
+        <div class="solutions-alt-panel-visual">
+          <img src="assets/sec5-image-returns-assurance.png" alt="" class="solutions-alt-visual-image" />
+        </div>
+      </article>
+    </div>
+  </div>
+  </div>
+</section>
+
+<script>
+(() => {
+  const section = document.currentScript.previousElementSibling;
+  const tabs = section.querySelectorAll('.solutions-alt-tab');
+  const headings = section.querySelectorAll('.solutions-alt-panel-heading');
+  const rail = section.querySelector('.solutions-alt-tabs-rail');
+  const tabsSticky = section.querySelector('.solutions-alt-tabs-sticky');
+
+  let currentActiveIndex = 0;
+  const setActive = (index) => {
+    if (index === currentActiveIndex) return;
+    currentActiveIndex = index;
+    tabs.forEach((tab) => {
+      tab.classList.toggle('solutions-alt-tab--active', Number(tab.dataset.panelIndex) === index);
+    });
+  };
+
+  tabs.forEach((tab) => {
+    tab.addEventListener('click', () => {
+      const index = Number(tab.dataset.panelIndex);
+      setActive(index);
+      headings[index]?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  });
+
+  // Scrollspy: a single observer watching a 1px line at the vertical center
+  // of the viewport (rootMargin -50%/-50% collapses the root to that line).
+  // Whichever heading is crossing it becomes active. This replaced a
+  // dual-line, direction-aware setup that was tuned for the old tall,
+  // widely-spaced sticky panels — with rows this short and close together,
+  // that scheme could have two or three headings inside its trigger band at
+  // once and light up the wrong tab. A single center line has no such
+  // ambiguity regardless of row height.
+  const headingTargets = new Map(Array.from(headings).map((heading, i) => [heading, i]));
+
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting && headingTargets.has(entry.target)) {
+          setActive(headingTargets.get(entry.target));
+        }
+      });
+    },
+    { rootMargin: '-50% 0px -50% 0px', threshold: 0 }
+  );
+  headingTargets.forEach((_, heading) => observer.observe(heading));
+
+  // Rail height bounds how far the sticky tabs can travel — same technique
+  // as before, just for a single rail now that the visual is no longer a
+  // separate shared sticky column: unstick once the last heading reaches
+  // the top of the sticky sidebar, rather than waiting for all of its
+  // content (feature list + button) to scroll past first.
+  const lastHeading = headings[headings.length - 1];
+  const updateRailHeight = () => {
+    if (window.innerWidth <= 900) {
+      rail.style.height = '';
+      return;
+    }
+    const lastHeadingTop = lastHeading.getBoundingClientRect().top;
+    const tabsHeight = tabsSticky.getBoundingClientRect().height;
+    rail.style.height = `${Math.max(0, lastHeadingTop - rail.getBoundingClientRect().top + tabsHeight)}px`;
+  };
+
+  updateRailHeight();
+  window.addEventListener('resize', updateRailHeight);
+  window.addEventListener('load', updateRailHeight);
+  if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(updateRailHeight);
+  }
+})();
+</script>
+<section class="testimonials-block section-divider">
+  <div class="testimonials-inner grid-frame">
+    <div class="testimonials-heading-group">
+      <h2 class="testimonials-heading">
+        The right decision<br />
+        changes <span class="testimonials-heading-muted">everything</span>.
+      </h2>
+      <p class="testimonials-subtext">
+        See how businesses turn better decisions into stronger growth, safer customers, and measurable results.
+      </p>
+    </div>
+
+    <div class="testimonials-cards swiper">
+      <div class="swiper-wrapper">
+        <div class="swiper-slide">
+          <article class="testimonials-card">
+            <p class="testimonials-quote">Our partnership with Signifyd has been the catalyst for change for our overall customer experience. The results we&rsquo;ve seen across approvals and chargeback reduction have been nothing short of extraordinary.</p>
+            <div class="testimonials-attribution">
+              <div class="testimonials-avatar">
+                <img src="assets/sec6-avatar-emilio-maldonado.png" alt="" />
+              </div>
+              <div class="testimonials-attribution-info">
+                <p class="testimonials-name">EMILIO MALDONADO</p>
+                <p class="testimonials-title">Manager of Customer Experience, CYMBIOTIKA</p>
+              </div>
+            </div>
+            <img class="testimonials-quote-mark" src="assets/sec6-quote-mark.svg" alt="" aria-hidden="true" />
+          </article>
+        </div>
+
+        <div class="swiper-slide">
+          <article class="testimonials-card">
+            <p class="testimonials-quote">Fraudsters know you are looking for specific behaviors, and what they do is increasingly resemble legitimate clients. If you only know what a shopper does within your business, you are missing a part of the movie. To see the full movie, machine learning tools and agile providers like Signifyd, and above all a great team monitoring this data, are key.</p>
+            <div class="testimonials-attribution">
+              <div class="testimonials-avatar">
+                <img src="assets/sec6-avatar-carlos-madrona.png" alt="" />
+              </div>
+              <div class="testimonials-attribution-info">
+                <p class="testimonials-name">CARLOS MADRONA</p>
+                <p class="testimonials-title">Managing Payments &amp; Fraud Director, MANGO</p>
+              </div>
+            </div>
+            <img class="testimonials-quote-mark" src="assets/sec6-quote-mark.svg" alt="" aria-hidden="true" />
+          </article>
+        </div>
+
+        <div class="swiper-slide">
+          <article class="testimonials-card">
+            <p class="testimonials-quote">Signifyd really helps to create trust in the business, not only from a consumer perspective but also internally. It&rsquo;s a reliable source where you no longer need to be concerned about chargebacks or payment refusals.</p>
+            <div class="testimonials-attribution">
+              <div class="testimonials-avatar">
+                <img src="assets/sec6-avatar-ivone-miranda.png" alt="" />
+              </div>
+              <div class="testimonials-attribution-info">
+                <p class="testimonials-name">IVONE MIRANDA</p>
+                <p class="testimonials-title">Consumer Experience Lead, PHILIPS</p>
+              </div>
+            </div>
+            <img class="testimonials-quote-mark" src="assets/sec6-quote-mark.svg" alt="" aria-hidden="true" />
+          </article>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="testimonials-nav">
+      <button type="button" class="testimonials-nav-btn testimonials-nav-btn--prev" aria-label="Previous testimonial">
+        <img src="assets/sec6-chevron-left.svg" alt="" class="testimonials-nav-icon" />
+      </button>
+      <button type="button" class="testimonials-nav-btn testimonials-nav-btn--next" aria-label="Next testimonial">
+        <img src="assets/sec6-chevron-right.svg" alt="" class="testimonials-nav-icon" />
+      </button>
+    </div>
+  </div>
+</section>
+
+<script>
+(() => {
+  const section = document.currentScript.previousElementSibling;
+  const wrapper = section.querySelector('.testimonials-cards .swiper-wrapper');
+
+  // Swiper's loop mode needs a much bigger real-slide buffer than the 3
+  // actual testimonials to stay stable through continuous drag (not just
+  // click-to-advance) — each visible card only takes up ~46% of the row, so
+  // the loop-recycling boundary sits close by and a drag gesture crosses it
+  // easily. Cloning at runtime (instead of hand-duplicating the markup 3-4x)
+  // keeps the authored HTML to the real 3 testimonials; the clones are
+  // purely a Swiper implementation detail.
+  const originalSlides = Array.from(wrapper.children);
+  const REPEAT = 4;
+  for (let i = 1; i < REPEAT; i += 1) {
+    originalSlides.forEach((slide) => wrapper.appendChild(slide.cloneNode(true)));
+  }
+
+  const swiper = new Swiper(section.querySelector('.testimonials-cards'), {
+    slidesPerView: 'auto',
+    spaceBetween: 32,
+    centeredSlides: true,
+    loop: true,
+    loopAdditionalSlides: originalSlides.length,
+    initialSlide: 1,
+    grabCursor: true,
+    navigation: {
+      nextEl: section.querySelector('.testimonials-nav-btn--next'),
+      prevEl: section.querySelector('.testimonials-nav-btn--prev'),
+    },
+  });
+})();
+</script>
+<section class="stats-wrapper section-divider">
+  <div class="stats-block grid-frame">
+  <div class="stats-intro">
+    <p class="stats-headline">
+      Real numbers.<br />
+      <span class="stats-headline-muted">Real guarantee</span>.
+    </p>
+    <div class="stats-intro-side">
+      <p class="stats-subhead">Every result comes with Signifyd&rsquo;s 100% financial guarantee, because we back every decision we make, on every approved order.</p>
+      <a href="#" class="btn--inline">
+        <span class="btn-inline-label">Explore all case studies</span>
+        <img src="assets/sec7-icon-arrow-right.svg" alt="" class="btn-inline-icon" />
+      </a>
+    </div>
+  </div>
+
+  <div class="stats-content">
+    <div class="stats-feature">
+      <div class="stats-feature-media">
+        <img src="assets/sec7-image-testimonial.png" alt="" class="stats-feature-image" />
+        <div class="stats-feature-play" aria-label="Play video">
+          <img src="assets/sec7-icon-play.svg" alt="" class="stats-feature-play-icon" />
+        </div>
+      </div>
+      <div class="stats-feature-copy">
+        <div class="stats-feature-copy-top">
+          <img src="assets/sec7-logo-buildabear.svg" alt="Build-A-Bear Workshop" class="stats-feature-logo" />
+          <div class="stats-feature-text">
+            <p class="stats-feature-title">Protecting the customer experience at scale.</p>
+            <p class="stats-feature-quote">&ldquo;Signifyd&rsquo;s model works for a company like ours because we are in the public eye and need to constantly protect our guests. This ensures they can shop with us time and again, confident that we provide a safe and genuinely fun environment.&rdquo;</p>
+          </div>
+        </div>
+        <div class="stats-feature-attribution">
+          <p class="stats-feature-name">DARA MEATH</p>
+          <p class="stats-feature-role">SVP, CHIEF TECHNOLOGY OFFICER</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="stats-cards">
+      <article class="stats-card">
+        <div class="stats-card-top">
+          <div class="stats-card-logo-wrap">
+            <img src="assets/sec7-logo-philips.svg" alt="Philips" class="stats-card-logo" />
+          </div>
+          <p class="stats-card-stat">+75%</p>
+        </div>
+        <div class="stats-card-bottom">
+          <div class="stats-card-copy">
+            <p class="stats-card-title">Conversion Rate Achieved</p>
+            <p class="stats-card-text">Conversion rates climbed from 40% to over 75% while chargebacks fell from 5% to below 1%, improving revenue and customer satisfaction.</p>
+          </div>
+          <a href="#" class="btn--inline">
+            <span class="btn-inline-label">Read case study</span>
+            <img src="assets/sec7-icon-arrow-right.svg" alt="" class="btn-inline-icon" />
+          </a>
+        </div>
+      </article>
+
+      <article class="stats-card">
+        <div class="stats-card-top">
+          <div class="stats-card-logo-wrap">
+            <img src="assets/sec7-logo-cymbiotika.svg" alt="Cymbiotika" class="stats-card-logo" />
+          </div>
+          <p class="stats-card-stat">98%</p>
+        </div>
+        <div class="stats-card-bottom">
+          <div class="stats-card-copy">
+            <p class="stats-card-title">Order Approval Rate</p>
+            <p class="stats-card-text">Signifyd drove approval rates to 98% and cut chargebacks by 93%, saving $1.2M and unlocking significant revenue growth.</p>
+          </div>
+          <a href="#" class="btn--inline">
+            <span class="btn-inline-label">Read case study</span>
+            <img src="assets/sec7-icon-arrow-right.svg" alt="" class="btn-inline-icon" />
+          </a>
+        </div>
+      </article>
+
+      <article class="stats-card">
+        <div class="stats-card-top">
+          <div class="stats-card-logo-wrap">
+            <img src="assets/sec7-logo-ferguson.svg" alt="Ferguson" class="stats-card-logo" />
+          </div>
+          <p class="stats-card-stat">$12M</p>
+        </div>
+        <div class="stats-card-bottom">
+          <div class="stats-card-copy">
+            <p class="stats-card-title">Saved in Auth-Rate Alone</p>
+            <p class="stats-card-text">A near-perfect 98.5% approval rate, $0 in fraud losses, and $12M saved from moving to pre-auth, freeing the team to tackle consumer abuse.</p>
+          </div>
+          <a href="#" class="btn--inline">
+            <span class="btn-inline-label">Read case study</span>
+            <img src="assets/sec7-icon-arrow-right.svg" alt="" class="btn-inline-icon" />
+          </a>
+        </div>
+      </article>
+    </div>
+  </div>
+  </div>
+</section>
+<section class="big-numbers-block section-divider theme-inverted">
+  <div class="big-numbers-inner grid-frame">
+    <div class="big-numbers-left">
+      <div class="big-numbers-heading-group">
+        <p class="big-numbers-eyebrow">THE NETWORK BEHIND EVERY DECISION</p>
+        <h2 class="big-numbers-headline">Built on 15+ years of knowing<br /><span class="big-numbers-highlight">who to trust</span>.</h2>
+      </div>
+      <p class="big-numbers-subtext">No model is smarter than its data. Ours has been learning from the world's commerce network for 15 years, and every transaction makes the next decision even sharper.</p>
+    </div>
+    <div class="big-numbers-right">
+      <div class="big-numbers-stat-row">
+        <p class="big-numbers-stat-number">700M+</p>
+        <div class="big-numbers-stat-desc-wrap">
+          <p class="big-numbers-stat-desc">Unique identities with purchase history, behavior, and intent signals</p>
+        </div>
+      </div>
+      <div class="big-numbers-stat-row">
+        <p class="big-numbers-stat-number">15 years</p>
+        <div class="big-numbers-stat-desc-wrap">
+          <p class="big-numbers-stat-desc">Of identity and intent expertise, continuously retrained, not static</p>
+        </div>
+      </div>
+      <div class="big-numbers-stat-row">
+        <p class="big-numbers-stat-number">1,900%</p>
+        <div class="big-numbers-stat-desc-wrap">
+          <p class="big-numbers-stat-desc">YoY growth in AI-referred conversions on our network</p>
+        </div>
+      </div>
+      <div class="big-numbers-stat-row big-numbers-stat-row--last">
+        <p class="big-numbers-stat-number">100%</p>
+        <div class="big-numbers-stat-desc-wrap">
+          <p class="big-numbers-stat-desc">Financial guarantee on every approved order</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<footer class="footer section-divider">
+  <!-- Grid texture + globe video grouped into one layer, a sibling of
+       .footer-content (not nested in it) so it spans the full footer
+       height — width still capped/centered to the 1256px column between
+       the two vertical lines via .footer-scenery's own max-width +
+       margin:auto. -->
+  <div class="footer-scenery" aria-hidden="true">
+    <div class="footer-line-grid-clip">
+      <img class="footer-line-grid" src="assets/sec4-bg-grid-lines.svg" alt="" />
+    </div>
+    <div class="footer-globe-anim">
+      <video class="footer-globe-video" src="assets/Vids/256876 - Signifyd - Full Globe Spinning Animation_V1_D2.webm" autoplay loop muted playsinline disablepictureinpicture></video>
+    </div>
+  </div>
+  <div class="footer-scenery-blur" aria-hidden="true"></div>
+  <!-- One continuous grid-frame box for the CTA block and the columns
+       block, so the vertical lines are drawn once, unbroken. -->
+  <div class="footer-content grid-frame">
+    <div class="footer-cta-inner">
+      <div class="footer-cta-heading-group">
+        <div class="footer-cta-heading-inner">
+          <p class="footer-eyebrow">THE SIGNIFYD GUARANTEE</p>
+          <h2 class="footer-headline">Every decision clear.<br />Every outcome guaranteed.</h2>
+        </div>
+        <p class="footer-subtext">We back every decision with a financial guarantee, because 15 years of data and refinement means we're confident enough to stake money on it. When Signifyd approves an order, you can act on it. If we're wrong, we cover it.</p>
+      </div>
+      <div class="footer-cta-buttons">
+        <button type="button" class="btn btn--primary footer-btn-fixed">Request Demo</button>
+        <a class="btn btn--secondary" href="#">
+          Talk to Sales
+        </a>
+      </div>
+    </div>
+    <div class="footer-columns">
+      <div class="footer-col footer-col--brand">
+        <img src="assets/sec9-signifyd-logo.svg" alt="Signifyd" class="footer-logo" />
+        <p class="footer-tagline">Commerce runs on our decisions.</p>
+      </div>
+      <div class="footer-col">
+        <p class="footer-col-title">SOLUTIONS</p>
+        <a href="#" class="footer-col-link">Fraud &amp; Abuse Protection</a>
+        <a href="#" class="footer-col-link">Account Protection</a>
+        <a href="#" class="footer-col-link">Returns Management</a>
+        <a href="#" class="footer-col-link">Chargeback Management</a>
+      </div>
+      <div class="footer-col">
+        <p class="footer-col-title">COMPANY</p>
+        <a href="#" class="footer-col-link">About</a>
+        <a href="#" class="footer-col-link">Customers</a>
+        <a href="#" class="footer-col-link">Careers</a>
+      </div>
+      <div class="footer-col">
+        <p class="footer-col-title">RESOURCES</p>
+        <a href="#" class="footer-col-link">Blog</a>
+        <a href="#" class="footer-col-link">Resources</a>
+        <a href="#" class="footer-col-link">Contact</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<section class="copyrights-wrapper">
+  <div class="copyrights-inner grid-frame">
+    <p class="copyrights-text">© 2026 SIGNIFYD, INC. ALL RIGHTS RESERVED.</p>
+    <div class="copyrights-legal-links">
+      <a href="#" class="copyrights-legal-link">Privacy</a>
+      <a href="#" class="copyrights-legal-link">Terms</a>
+    </div>
+  </div>
+</section>
+
+<script>
+(() => {
+  const video = document.querySelector('.footer-globe-video');
+  const tryPlay = () => video.play().catch(() => {});
+  if (video.readyState >= 2) {
+    tryPlay();
+  } else {
+    video.addEventListener('canplay', tryPlay, { once: true });
+  }
+})();
+</script>
+</body>
+</html>
