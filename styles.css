@@ -276,6 +276,24 @@ button {
 .btn--primary {
   background-color: var(--theme-btn-primary-bg);
   color: var(--theme-btn-primary-text);
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+/* Primary CTA hover swaps to a flat brand fill with dark text, instead of
+   the generic dark wash every other button uses — same swap regardless of
+   theme, so it reads identically on a normal dark-fill primary button and
+   on the Platform section's inverted (white-fill) one. The shared
+   ::before wash still exists underneath (for :active/other variants) so
+   it's explicitly suppressed here rather than left to darken the brand
+   fill. Transition lives on the base rule (not just :hover) so it also
+   eases back on mouse-out, matching the secondary button's fade. */
+.btn--primary:hover {
+  background-color: var(--color-brand);
+  color: var(--color-cta-text-inverted);
+}
+
+.btn--primary:hover::before {
+  opacity: 0;
 }
 
 .btn--secondary {
