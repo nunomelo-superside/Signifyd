@@ -257,7 +257,7 @@
         <p class="pain-points-card-tag-label">IDENTITY</p>
       </div>
       <div class="pain-points-card-media">
-        <img src="assets/sec3-image-identity.png" alt="" class="pain-points-card-image" />
+        <img src="assets/assets/Img v2/pain point 01.jpg" alt="" class="pain-points-card-image" />
       </div>
       <div class="pain-points-card-copy">
         <h3 class="pain-points-card-title">Bad actors don&rsquo;t steal access. They manufacture it.</h3>
@@ -271,7 +271,7 @@
         <p class="pain-points-card-tag-label">PAYMENTS</p>
       </div>
       <div class="pain-points-card-media">
-        <img src="assets/sec3-image-payments.png" alt="" class="pain-points-card-image" />
+        <img src="assets/assets/Img v2/pain point 02.jpg" alt="" class="pain-points-card-image" />
       </div>
       <div class="pain-points-card-copy">
         <h3 class="pain-points-card-title">You measure fraud losses not the revenue you refused.</h3>
@@ -285,7 +285,7 @@
         <p class="pain-points-card-tag-label">REVERSALS</p>
       </div>
       <div class="pain-points-card-media">
-        <img src="assets/sec3-image-reversals.png" alt="" class="pain-points-card-image" />
+        <img src="assets/assets/Img v2/pain point 03.jpg" alt="" class="pain-points-card-image" />
       </div>
       <div class="pain-points-card-copy">
         <h3 class="pain-points-card-title">The transaction ends. The exposure doesn&rsquo;t.</h3>
@@ -299,7 +299,7 @@
         <p class="pain-points-card-tag-label">LOREM IPSUM</p>
       </div>
       <div class="pain-points-card-media">
-        <img src="assets/sec3-image-reversals.png" alt="" class="pain-points-card-image" />
+        <img src="assets/assets/Img v2/pain point 04.jpg" alt="" class="pain-points-card-image" />
       </div>
       <div class="pain-points-card-copy">
         <h3 class="pain-points-card-title">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</h3>
@@ -668,16 +668,16 @@
     <div class="solutions-visual-rail">
       <div class="solutions-visual-sticky">
         <div class="solutions-visual-placeholder solutions-visual-placeholder--active" data-panel-index="0" aria-hidden="true">
-          <img src="assets/sec5-image-account-integrity.png" alt="" class="solutions-visual-image" />
+          <img src="assets/assets/Img v2/solutions 01.jpg" alt="" class="solutions-visual-image" />
         </div>
         <div class="solutions-visual-placeholder" data-panel-index="1" aria-hidden="true">
-          <img src="assets/sec5-image-purchase-optimization.png" alt="" class="solutions-visual-image" />
+          <img src="assets/assets/Img v2/solutions 02.jpg" alt="" class="solutions-visual-image" />
         </div>
         <div class="solutions-visual-placeholder" data-panel-index="2" aria-hidden="true">
-          <img src="assets/sec5-image-returns-assurance.png" alt="" class="solutions-visual-image" />
+          <img src="assets/assets/Img v2/solutions 03.jpg" alt="" class="solutions-visual-image" />
         </div>
         <div class="solutions-visual-placeholder" data-panel-index="3" aria-hidden="true">
-          <img src="assets/sec5-image-returns-assurance.png" alt="" class="solutions-visual-image" />
+          <img src="assets/assets/Img v2/solutions 04.jpg" alt="" class="solutions-visual-image" />
         </div>
       </div>
     </div>
@@ -696,42 +696,6 @@
   const visualRail = section.querySelector('.solutions-visual-rail');
   const visualSticky = section.querySelector('.solutions-visual-sticky');
   const visualPlaceholders = section.querySelectorAll('.solutions-visual-placeholder');
-
-  // Must match .solutions-tabs-sticky's `top` value (10vh): clicking a tab should
-  // land exactly where the sidebar sits. Computed live since vh depends on
-  // the current viewport height.
-  const getStickyOffset = () => window.innerHeight * 0.1;
-
-  // Where the indicator swaps, direction-aware: scrolling down swaps on the
-  // next heading crossing 50vh from the top. Scrolling up swaps on the
-  // previous heading crossing a small top-anchored line (5vh) instead of a
-  // bottom-anchored one: the panel that's active when a reversal starts
-  // sits at 10vh, so any larger/bottom-anchored offset (e.g. 90vh) requires
-  // ITS OWN heading to travel all the way back down to that line before
-  // re-firing — and since that heading is always closer to any fixed line
-  // than the previous one it should be yielding to, it re-triggers itself
-  // first, well after its content should have already handed off. A line
-  // below 10vh sits behind where the active heading already is, so it
-  // won't re-cross going forward, while the previous heading (re-entering
-  // from above) crosses it promptly. Lower this value to swap even sooner;
-  // it's independent of the sidebar's own 10vh sticky offset above, so
-  // tuning it doesn't move the sidebar or the tab-click landing spot.
-  const getDownTriggerOffset = () => window.innerHeight * 0.5;
-  const getUpTriggerOffset = () => window.innerHeight * 0.05;
-
-  let lastScrollY = window.scrollY;
-  let scrollDirection = 'down';
-  window.addEventListener(
-    'scroll',
-    () => {
-      const currentScrollY = window.scrollY;
-      if (currentScrollY !== lastScrollY) {
-        scrollDirection = currentScrollY > lastScrollY ? 'down' : 'up';
-        lastScrollY = currentScrollY;
-      }
-    },
-    { passive: true }
-  );
 
   // Pushes the incoming placeholder into place while the outgoing one slides
   // out ahead of it in the same direction, like a carousel push transition.
@@ -762,9 +726,9 @@
   };
 
   let currentActiveIndex = 0;
-  const setActive = (index, direction) => {
+  const setActive = (index) => {
     if (index === currentActiveIndex) return;
-    const resolvedDirection = direction || (index > currentActiveIndex ? 'down' : 'up');
+    const resolvedDirection = index > currentActiveIndex ? 'down' : 'up';
     const outgoing = getPlaceholder(currentActiveIndex);
     currentActiveIndex = index;
 
@@ -777,55 +741,74 @@
     }
   };
 
+  // Scrolls via Lenis rather than native scrollIntoView: Lenis has already
+  // hijacked wheel/scroll input and drives the page through its own rAF
+  // loop, so a native smooth-scroll animates on top of that and the two
+  // fight — the page overshoots erratically and the scrollspy below can
+  // catch a heading several tabs past the one actually clicked. Handing
+  // the scroll to Lenis itself keeps it as the single source of truth.
   tabs.forEach((tab) => {
     tab.addEventListener('click', () => {
       const index = Number(tab.dataset.panelIndex);
+      const heading = headings[index];
+      if (!heading) return;
       setActive(index);
-      headings[index]?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      if (typeof lenis !== 'undefined') {
+        // The scrollspy below can still catch a neighboring heading crossing
+        // the trigger line mid-transit and re-fire setActive for it before
+        // this one finishes settling. Re-asserting the clicked index once
+        // Lenis reports the scroll actually done corrects that, since
+        // setActive no-ops when it's already the current index.
+        lenis.scrollTo(heading, { onComplete: () => setActive(index) });
+      } else {
+        heading.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
     });
   });
 
-  // Two observers, one per direction, each gated so it only acts while the
-  // page is actually being scrolled that way — otherwise both lines would
-  // fire on every pass and the down-trigger would win regardless of
-  // direction. rootMargin only accepts px/%, not vh, so each offset is
-  // converted to px live and both are rebuilt on resize to stay in sync.
-  //
-  // Both directions map heading[i] directly to panel i — panel i becomes
-  // active exactly when its own heading crosses the trigger line, just at
-  // a different line depending on direction (50vh going down, 90vh going
-  // up).
+  // Scrollspy: a single observer watching a 1px line at the vertical center
+  // of the viewport (rootMargin -50%/-50% collapses the root to that line).
+  // Whichever heading is crossing it becomes active. This replaced a dual
+  // direction-aware, direction-gated setup (a 50vh down-trigger + a 5vh
+  // up-trigger) that could desync from a click-triggered scroll: as
+  // scrollIntoView animated toward the clicked heading, whichever other
+  // heading happened to be crossing the down-trigger line at that moment
+  // fired its own setActive and won the race, lighting up the wrong tab. A
+  // single center line sidesteps that — the clicked heading ends up
+  // resting exactly on the line it's watched against, so nothing else can
+  // cross it first.
   const headingTargets = new Map(Array.from(headings).map((heading, i) => [heading, i]));
 
-  const makeDirectionalObserver = (getOffset, direction, targets) => {
-    const offset = getOffset();
-    const bottomMargin = Math.max(0, window.innerHeight - offset);
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (scrollDirection !== direction) return;
-        entries.forEach((entry) => {
-          if (entry.isIntersecting && targets.has(entry.target)) {
-            setActive(targets.get(entry.target), direction);
-          }
-        });
-      },
-      { rootMargin: `-${offset}px 0px -${bottomMargin}px 0px`, threshold: 0 }
-    );
-    targets.forEach((_, element) => observer.observe(element));
-    return observer;
+  // Ignored until the page's own `load` + webfont-ready milestones (the
+  // same ones updateRailHeight below waits on): observing these headings
+  // starts as soon as this script runs, well before images/fonts finish
+  // and layout has settled, and the observer's very first batch reflects
+  // whatever (possibly still-collapsing) layout exists at that instant —
+  // in practice that transient state has quietly reported the LAST
+  // heading as centered and jumped straight to it, with no scroll at all.
+  // Real scroll-driven updates only ever happen after layout is stable, so
+  // nothing legitimate is lost by ignoring everything before that point.
+  let observerArmed = false;
+  const armObserver = () => {
+    observerArmed = true;
   };
+  window.addEventListener('load', armObserver);
+  if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(armObserver);
+  }
 
-  let downObserver = null;
-  let upObserver = null;
-  const setupObservers = () => {
-    if (downObserver) downObserver.disconnect();
-    if (upObserver) upObserver.disconnect();
-    downObserver = makeDirectionalObserver(getDownTriggerOffset, 'down', headingTargets);
-    upObserver = makeDirectionalObserver(getUpTriggerOffset, 'up', headingTargets);
-  };
-
-  setupObservers();
-  window.addEventListener('resize', setupObservers);
+  const observer = new IntersectionObserver(
+    (entries) => {
+      if (!observerArmed) return;
+      entries.forEach((entry) => {
+        if (entry.isIntersecting && headingTargets.has(entry.target)) {
+          setActive(headingTargets.get(entry.target));
+        }
+      });
+    },
+    { rootMargin: '-50% 0px -50% 0px', threshold: 0 }
+  );
+  headingTargets.forEach((_, heading) => observer.observe(heading));
 
   // Rail height bounds how far each sticky element can travel. Native CSS
   // `position: sticky` doesn't detach abruptly — it starts a gradual release
@@ -908,7 +891,7 @@
           </div>
         </div>
         <div class="solutions-alt-panel-visual">
-          <img src="assets/sec5-image-account-integrity.png" alt="" class="solutions-alt-visual-image" />
+          <img src="assets/assets/Img v2/solutions 01.jpg" alt="" class="solutions-alt-visual-image" />
         </div>
       </article>
 
@@ -924,7 +907,7 @@
           </div>
         </div>
         <div class="solutions-alt-panel-visual">
-          <img src="assets/sec5-image-purchase-optimization.png" alt="" class="solutions-alt-visual-image" />
+          <img src="assets/assets/Img v2/solutions 02.jpg" alt="" class="solutions-alt-visual-image" />
         </div>
       </article>
 
@@ -940,7 +923,7 @@
           </div>
         </div>
         <div class="solutions-alt-panel-visual">
-          <img src="assets/sec5-image-returns-assurance.png" alt="" class="solutions-alt-visual-image" />
+          <img src="assets/assets/Img v2/solutions 03.jpg" alt="" class="solutions-alt-visual-image" />
         </div>
       </article>
 
@@ -956,7 +939,7 @@
           </div>
         </div>
         <div class="solutions-alt-panel-visual">
-          <img src="assets/sec5-image-returns-assurance.png" alt="" class="solutions-alt-visual-image" />
+          <img src="assets/assets/Img v2/solutions 04.jpg" alt="" class="solutions-alt-visual-image" />
         </div>
       </article>
     </div>
@@ -981,11 +964,28 @@
     });
   };
 
+  // Scrolls via Lenis rather than native scrollIntoView: Lenis has already
+  // hijacked wheel/scroll input and drives the page through its own rAF
+  // loop, so a native smooth-scroll animates on top of that and the two
+  // fight — the page overshoots erratically and the scrollspy below can
+  // catch a heading several tabs past the one actually clicked. Handing
+  // the scroll to Lenis itself keeps it as the single source of truth.
   tabs.forEach((tab) => {
     tab.addEventListener('click', () => {
       const index = Number(tab.dataset.panelIndex);
+      const heading = headings[index];
+      if (!heading) return;
       setActive(index);
-      headings[index]?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      if (typeof lenis !== 'undefined') {
+        // The scrollspy below can still catch a neighboring heading crossing
+        // the trigger line mid-transit and re-fire setActive for it before
+        // this one finishes settling. Re-asserting the clicked index once
+        // Lenis reports the scroll actually done corrects that, since
+        // setActive no-ops when it's already the current index.
+        lenis.scrollTo(heading, { onComplete: () => setActive(index) });
+      } else {
+        heading.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
     });
   });
 
@@ -999,8 +999,27 @@
   // ambiguity regardless of row height.
   const headingTargets = new Map(Array.from(headings).map((heading, i) => [heading, i]));
 
+  // Ignored until the page's own `load` + webfont-ready milestones (the
+  // same ones updateRailHeight below waits on): observing these headings
+  // starts as soon as this script runs, well before images/fonts finish
+  // and layout has settled, and the observer's very first batch reflects
+  // whatever (possibly still-collapsing) layout exists at that instant —
+  // in practice that transient state has quietly reported the LAST
+  // heading as centered and jumped straight to it, with no scroll at all.
+  // Real scroll-driven updates only ever happen after layout is stable, so
+  // nothing legitimate is lost by ignoring everything before that point.
+  let observerArmed = false;
+  const armObserver = () => {
+    observerArmed = true;
+  };
+  window.addEventListener('load', armObserver);
+  if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(armObserver);
+  }
+
   const observer = new IntersectionObserver(
     (entries) => {
+      if (!observerArmed) return;
       entries.forEach((entry) => {
         if (entry.isIntersecting && headingTargets.has(entry.target)) {
           setActive(headingTargets.get(entry.target));

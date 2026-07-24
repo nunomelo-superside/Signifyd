@@ -171,6 +171,19 @@ body {
   max-width: var(--grid-max-width);
   margin: 0 auto;
   padding: 0 var(--grid-padding);
+}
+
+/* Drawn as a pseudo-element (rather than directly on .grid-frame's own
+   background) so it can carry a positive z-index and paint on top of any
+   content that breaks out to the frame's edge — e.g. .testimonials-cards,
+   which intentionally overflows the 32px padding for its carousel peek and
+   would otherwise cover the line with its card background. */
+.grid-frame::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
   background-image:
     repeating-linear-gradient(to bottom, var(--theme-grid-line) 0, var(--theme-grid-line) 4px, transparent 4px, transparent 8px),
     repeating-linear-gradient(to bottom, var(--theme-grid-line) 0, var(--theme-grid-line) 4px, transparent 4px, transparent 8px);
