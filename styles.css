@@ -2232,16 +2232,59 @@ button {
 }
 
 /* Width/margin/vertical-grid-lines come from .grid-frame. */
+/* No gap between the left-wrapper (title+fade) and the scroll-row: once
+   the title is stuck, the tabs/image rail parks flush against its bottom
+   edge (see the JS-computed `top` offsets) with zero space between them —
+   removing the gap here means the very first render (before any scroll)
+   already looks like that, instead of starting with a big gap that then
+   closes up as soon as you scroll. Title and anchor nav read as one
+   continuous block from the start. */
+/* No top padding here — it moved onto the sticky left-wrapper itself (see
+   below). The block's own padding only holds while the title is still in
+   its normal-flow spot; once scrolled into the stuck position at top:0, a
+   gap here would vanish, leaving the title glued to the very edge of the
+   viewport with nothing to stop content re-escaping through it. Padding
+   baked into the sticky box's own border box persists at every scroll
+   position, stuck or not, and (being part of that box) stays covered by
+   its background the same as the rest of it. */
 .solutions-alt2-block {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 10vh;
-  padding: 112px var(--grid-padding);
+  gap: 0;
+  /* Bottom trimmed from 112px: that plus the last panel's old 20vh margin
+     (removed below) used to add a long stretch of dead scroll after the
+     tabs/image had already released — the section's own background kept
+     dominating the viewport well after the last item's heading had
+     already reached the anchor menu's top line. The centering gap (see
+     .solutions-alt2-left-wrapper) already gives the sticky content its
+     own breathing room while it's active; this is just what's left after
+     it releases, kept small on purpose. */
+  padding: 0 var(--grid-padding) 48px;
 }
 
-/* Left wrapper: headline + subtitle */
+/* Left rail: bounds how far the sticky headline block can travel, same
+   technique as .solutions-alt2-tabs-rail/.solutions-alt2-visual-rail below
+   (height set by JS to end at the last heading's top). Without this, the
+   headline's containing block was .solutions-alt2-block itself, which
+   only ends once the (much taller) panels column scrolls past — so the
+   headline stayed pinned long after the tabs/image had already released.
+   Bounding it the same way makes all three release together. */
+.solutions-alt2-left-rail {
+  position: relative;
+  width: 100%;
+}
 
+/* Left wrapper: headline + subtitle. Sticky (along with the fade band
+   below it) so the title stays pinned through the scroll instead of
+   scrolling away once the panels start — same idea as the tabs rail below
+   it, just anchored higher up. Explicit z-index (rather than leaning on
+   default paint order alone) guarantees the plain, non-positioned panel
+   text always stays hidden underneath its opaque background once scrolled
+   behind it — a hard crop, not just a translucent wash. tabsSticky's AND
+   visualSticky's own `top` are both nudged down by this element's rendered
+   height via JS (see the section's script) so the tabs rail and the image
+   park right below it, at the same line, instead of colliding with it. */
 .solutions-alt2-left-wrapper {
   display: flex;
   flex-direction: column;
@@ -2249,6 +2292,45 @@ button {
   justify-content: center;
   gap: 24px;
   width: 100%;
+  position: sticky;
+  /* Flush with the viewport top, not top:10vh — a panel scrolling up is
+     normal-flow, not sticky, so it keeps rising past this element's Y-band
+     once it clears it, same as it would past anything else in the
+     document. Sticking this at 10vh left a bare 10vh strip at the very
+     top of the viewport with nothing painted over it, so a panel would
+     render fully visible in that strip for a moment before finally
+     scrolling off past y:0 — visible proof the "opaque cover" only masks
+     the overlap window, not the whole escape. Pinning to the actual top
+     edge removes that gap entirely: there's no space above y:0 for
+     anything to be visible in, so a panel goes straight from
+     covered-by-this-background to off-viewport with nothing in between. */
+  top: 0;
+  z-index: 2;
+  background-color: var(--theme-bg);
+  /* Breathing room from the viewport's actual top edge — baked in here
+     instead of on .solutions-alt2-block (see that rule's comment) so it
+     survives being stuck at top:0. Part of this box's own border box, so
+     it's covered by the background-color above like everything else in
+     it. Set via JS (see the section's script), not a fixed value: it's
+     computed as half of whatever vertical space is left over after the
+     title+tabs/image block's own height, so that block sits centered in
+     the viewport instead of pinned to a fixed offset from the top with
+     the leftover space dumped entirely below. 0 here is just the pre-JS
+     fallback. */
+  padding-top: 0;
+}
+
+/* Invisible spacer now — the actual visible dissolve moved to
+   .solutions-alt2-panels-fade (anchored inside the scrolling text column
+   itself, see that rule's comment for why). Kept as a same-size, unpainted
+   box rather than removed: its height still feeds into the vertical
+   centering and headerOffsetPx math below, so removing it would shift
+   the title's own position/spacing. */
+.solutions-alt2-fade {
+  width: 100%;
+  height: 96px;
+  flex-shrink: 0;
+  pointer-events: none;
 }
 
 .solutions-alt2-title {
@@ -2342,7 +2424,7 @@ button {
 .solutions-alt2-tab::before {
   content: '';
   position: absolute;
-  left: -32px;
+  left: -24px;
   top: 50%;
   width: 16px;
   height: 1px;
@@ -2357,12 +2439,61 @@ button {
 
 /* Stacked panels */
 
-.solutions-alt2-panels {
+/* Holds the fade-rail and the actual panels flex list as plain stacked
+   siblings (no gap between them — panels needs to start exactly where it
+   always did) — grid-column lives here now instead of on
+   .solutions-alt2-panels itself, since the fade-rail needs to sit outside
+   that flex column's own `gap: 50vh`. Putting the fade-rail INSIDE that gap
+   context was tried first: it needed a negative margin that canceled both
+   its own height AND the 50vh gap, which came out more negative than the
+   rail was tall — that seems to have been enough to confuse the browser's
+   own layout for the sticky child inside it. Keeping the fade-rail as a
+   sibling of (not a child within) the gapped list sidesteps the issue
+   entirely: no gap to cancel, so its margin only ever needs to offset its
+   own height, exactly like .solutions-alt2-left-rail. */
+.solutions-alt2-panels-outer {
   grid-column: span 5;
   display: flex;
   flex-direction: column;
-  gap: 50vh;
   min-width: 0;
+}
+
+/* Top padding matches .solutions-alt2-panels-fade's own height (96px, see
+   below), not the 50vh gap between panels — this isn't about giving panel 0
+   reading time, it's just clearance so the fade band (which sits flush
+   against panel 0 with zero effective space, by design, via its rail's
+   negative margin) doesn't directly overlap panel 0's own first line while
+   at rest. */
+.solutions-alt2-panels {
+  display: flex;
+  flex-direction: column;
+  gap: 50vh;
+  padding-top: 96px;
+  min-width: 0;
+}
+
+/* Fade overlay lives here (inside the actual scrolling text column) instead
+   of inside the sticky title block above, so it's anchored to the same
+   coordinate space the panel text itself scrolls through, rather than to a
+   separately-computed sticky box whose own position only matches this one
+   because the math says so. A normal flow child (NOT position:absolute —
+   that was tried first, but a sticky element doesn't reliably engage when
+   its direct parent is absolutely positioned, so the child below just
+   scrolled with the page instead of sticking), bounded the same way as
+   .solutions-alt2-left-rail: height set by JS, with a compensating negative
+   margin-bottom so it doesn't shove .solutions-alt2-panels down. */
+.solutions-alt2-panels-fade-rail {
+  position: relative;
+  width: 100%;
+  pointer-events: none;
+}
+
+.solutions-alt2-panels-fade {
+  position: sticky;
+  top: 10vh;
+  height: 96px;
+  background: linear-gradient(to bottom, red 0%, transparent 100%);
+  pointer-events: none;
 }
 
 .solutions-alt2-panel {
@@ -2370,12 +2501,15 @@ button {
   width: 100%;
 }
 
-/* Breathing room before the next section. Not load-bearing for the sticky
-   release timing itself — that's handled in JS by accounting for each
-   sticky element's own height, so this can be any value without affecting
-   when the tabs/visual actually unstick. */
+/* Was 20vh of breathing room before the next section. Removed: it was
+   never load-bearing for the sticky release itself (that's bound in JS to
+   the last heading's own position, not this margin), it just meant the
+   page kept scrolling through empty space for a while after the tabs/
+   image had already released and the last heading had already reached
+   the anchor menu's top line — the section's background stuck around
+   dominating the viewport long after it had "finished". */
 .solutions-alt2-panel:last-child {
-  margin-bottom: 20vh;
+  margin-bottom: 0;
 }
 
 .solutions-alt2-panel-copy {
@@ -2436,7 +2570,10 @@ button {
 /* Shared visual rail: one sticky container holding all four images,
    cross-fading based on which panel is active instead of each panel
    carrying its own image. Bounded by the same rail-height technique as the
-   tabs, so both unstick together at the end. */
+   tabs, so both unstick together at the end. `top` below is just the
+   pre-JS fallback — the section's script overrides it to match the tabs
+   rail's offset (title+fade height), so the image stays top-aligned with
+   the anchor selector instead of the old fixed 10vh. */
 
 .solutions-alt2-visual-rail {
   grid-column: span 5;
@@ -2446,8 +2583,60 @@ button {
 .solutions-alt2-visual-sticky {
   position: sticky;
   top: 10vh;
-  height: 80vh;
+  /* Fixed px, not viewport-relative (was 80vh) — a constant size regardless
+     of browser window height. overflow:hidden moved onto
+     .solutions-alt2-visual-crossfade (below) instead of living here, so
+     this box's own bounds can still host the bottom mask past its edge
+     without clipping it — see that rule's comment. */
+  height: 600px;
+}
+
+/* Wraps just the crossfading placeholders, so it — not the sticky box
+   itself — is what clips them to a clean "push" transition as they slide
+   in/out via transform. Keeping this separate from
+   .solutions-alt2-visual-sticky is what lets the bottom mask below sit
+   inside that sticky box (inheriting its exact stuck/released timing for
+   free, since position:absolute in a sticky ancestor just tracks wherever
+   that ancestor currently is) while still rendering past its bounds
+   instead of being clipped along with the placeholders. */
+.solutions-alt2-visual-crossfade {
+  position: relative;
+  width: 100%;
+  height: 100%;
   overflow: hidden;
+}
+
+/* Bottom mask: mirrors the sticky title at the top, not just its fade —
+   the title HIDES escaping panel text because of its own opaque
+   background-color; the fade drawn on it is only the visible dissolve for
+   the last 96px before it. A gradient alone, with nothing opaque behind
+   it, would just be a translucent tint that panel text still shows right
+   through. This supplies that opaque backing itself: transparent for the
+   first 96px (the visible fade, blending into the panel/image content
+   above it), solid for the rest of its height (the actual hide).
+   Positioned absolute, anchored to .solutions-alt2-visual-sticky (its
+   nearest positioned ancestor) rather than being sticky itself — that's
+   deliberate: it always sits exactly at that box's bottom edge and
+   inherits its stuck/released state automatically, with no separate
+   height-bounding math of its own to keep in sync (a dedicated 4th grid
+   rail for this, JS-bound the same way as the tabs/visual rails, is what
+   broke last time — this sidesteps that whole mechanism). left/width use
+   percentages of ITS OWN containing block (this sticky box, i.e. the
+   image column) to reach across the panel-text column beside it, which
+   only works because that column and this one are equal width
+   (grid-column: span 5 each) — -100% steps left by exactly one such
+   column, 200% covers two of them, the extra 32px in both is the
+   column-gap between them. Doesn't reach the tabs column — that one's
+   static, nothing scrolling there needs hiding. */
+.solutions-alt2-bottom-mask {
+  position: absolute;
+  top: 100%;
+  left: calc(-100% - 32px);
+  width: calc(200% + 32px);
+  height: 300px;
+  z-index: 2;
+  background: linear-gradient(to bottom, transparent 0%, var(--theme-bg) 96px, var(--theme-bg) 100%);
+  pointer-events: none;
 }
 
 /* Base (unset) sits just below the visible frame, so the default entrance
@@ -2491,6 +2680,27 @@ button {
 /* Responsive */
 
 @media (max-width: 900px) {
+  /* Sticky is off below this width, so the top padding moves back onto the
+     block itself (its own top padding is 0 above this breakpoint — see
+     that rule's comment) instead of living on the now-static left-wrapper. */
+  .solutions-alt2-block {
+    padding-top: 112px;
+  }
+
+  .solutions-alt2-left-rail {
+    height: auto !important;
+  }
+
+  .solutions-alt2-left-wrapper {
+    position: static;
+    background-color: transparent;
+    padding-top: 0;
+  }
+
+  .solutions-alt2-fade {
+    display: none;
+  }
+
   .solutions-alt2-tabs-rail {
     grid-column: 1;
     height: auto !important;
@@ -2505,7 +2715,7 @@ button {
     row-gap: 32px;
   }
 
-  .solutions-alt2-panels {
+  .solutions-alt2-panels-outer {
     grid-column: 1;
   }
 
@@ -2525,6 +2735,14 @@ button {
   .solutions-alt2-visual-sticky {
     position: relative;
     height: 60vh;
+  }
+
+  .solutions-alt2-bottom-mask {
+    display: none;
+  }
+
+  .solutions-alt2-panels-fade-rail {
+    display: none;
   }
 
   .solutions-alt2-tabs {

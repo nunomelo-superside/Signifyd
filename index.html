@@ -586,7 +586,7 @@
   }
 })();
 </script>
-<section class="solutions-wrapper section-divider">
+<section class="solutions-wrapper section-divider" style="display: none;" data-hidden-for-debug="true">
   <div class="solutions-block grid-frame">
   <div class="solutions-left-wrapper">
     <h2 class="solutions-title">
@@ -853,7 +853,7 @@
      separate, independent copy to try a different approach without
      touching or losing the original. Delete this whole section + its CSS
      counterpart once one approach wins. -->
-<section class="solutions-alt-wrapper section-divider">
+<section class="solutions-alt-wrapper section-divider" style="display: none;" data-hidden-for-debug="true">
   <div class="solutions-alt-block grid-frame">
   <div class="solutions-alt-left-wrapper">
     <h2 class="solutions-alt-title">
@@ -1062,12 +1062,15 @@
      section + its CSS counterpart once one approach wins. -->
 <section class="solutions-alt2-wrapper section-divider">
   <div class="solutions-alt2-block grid-frame">
+  <div class="solutions-alt2-left-rail">
   <div class="solutions-alt2-left-wrapper">
     <h2 class="solutions-alt2-title">
       Commerce begins<br />
       before <span class="solutions-alt2-title-muted">the cart</span>.
     </h2>
     <p class="solutions-alt2-subtitle">The more context you have before checkout, the more confidently you can approve it.</p>
+    <div class="solutions-alt2-fade" aria-hidden="true"></div>
+  </div>
   </div>
 
   <div class="solutions-alt2-scroll-row">
@@ -1082,6 +1085,10 @@
       </div>
     </div>
 
+    <div class="solutions-alt2-panels-outer">
+    <div class="solutions-alt2-panels-fade-rail" aria-hidden="true">
+      <div class="solutions-alt2-panels-fade"></div>
+    </div>
     <div class="solutions-alt2-panels">
       <article class="solutions-alt2-panel" data-panel-index="0">
         <div class="solutions-alt2-panel-copy">
@@ -1138,21 +1145,25 @@
         </div>
       </article>
     </div>
+    </div>
 
     <div class="solutions-alt2-visual-rail">
       <div class="solutions-alt2-visual-sticky">
-        <div class="solutions-alt2-visual-placeholder solutions-alt2-visual-placeholder--active" data-panel-index="0" aria-hidden="true">
-          <img src="assets/assets/Img v2/solutions 01.jpg" alt="" class="solutions-alt2-visual-image" />
+        <div class="solutions-alt2-visual-crossfade">
+          <div class="solutions-alt2-visual-placeholder solutions-alt2-visual-placeholder--active" data-panel-index="0" aria-hidden="true">
+            <img src="assets/assets/Img v2/solutions 01.jpg" alt="" class="solutions-alt2-visual-image" />
+          </div>
+          <div class="solutions-alt2-visual-placeholder" data-panel-index="1" aria-hidden="true">
+            <img src="assets/assets/Img v2/solutions 02.jpg" alt="" class="solutions-alt2-visual-image" />
+          </div>
+          <div class="solutions-alt2-visual-placeholder" data-panel-index="2" aria-hidden="true">
+            <img src="assets/assets/Img v2/solutions 03.jpg" alt="" class="solutions-alt2-visual-image" />
+          </div>
+          <div class="solutions-alt2-visual-placeholder" data-panel-index="3" aria-hidden="true">
+            <img src="assets/assets/Img v2/solutions 04.jpg" alt="" class="solutions-alt2-visual-image" />
+          </div>
         </div>
-        <div class="solutions-alt2-visual-placeholder" data-panel-index="1" aria-hidden="true">
-          <img src="assets/assets/Img v2/solutions 02.jpg" alt="" class="solutions-alt2-visual-image" />
-        </div>
-        <div class="solutions-alt2-visual-placeholder" data-panel-index="2" aria-hidden="true">
-          <img src="assets/assets/Img v2/solutions 03.jpg" alt="" class="solutions-alt2-visual-image" />
-        </div>
-        <div class="solutions-alt2-visual-placeholder" data-panel-index="3" aria-hidden="true">
-          <img src="assets/assets/Img v2/solutions 04.jpg" alt="" class="solutions-alt2-visual-image" />
-        </div>
+        <div class="solutions-alt2-bottom-mask" aria-hidden="true"></div>
       </div>
     </div>
   </div>
@@ -1165,11 +1176,18 @@
   const tabs = section.querySelectorAll('.solutions-alt2-tab');
   const panels = section.querySelectorAll('.solutions-alt2-panel');
   const headings = section.querySelectorAll('.solutions-alt2-panel-heading');
+  const leftRail = section.querySelector('.solutions-alt2-left-rail');
+  const leftWrapper = section.querySelector('.solutions-alt2-left-wrapper');
+  const title = section.querySelector('.solutions-alt2-title');
+  const subtitle = section.querySelector('.solutions-alt2-subtitle');
+  const fade = section.querySelector('.solutions-alt2-fade');
   const rail = section.querySelector('.solutions-alt2-tabs-rail');
   const tabsSticky = section.querySelector('.solutions-alt2-tabs-sticky');
   const visualRail = section.querySelector('.solutions-alt2-visual-rail');
   const visualSticky = section.querySelector('.solutions-alt2-visual-sticky');
   const visualPlaceholders = section.querySelectorAll('.solutions-alt2-visual-placeholder');
+  const panelsFadeRail = section.querySelector('.solutions-alt2-panels-fade-rail');
+  const panelsFade = section.querySelector('.solutions-alt2-panels-fade');
 
   // Pushes the incoming placeholder into place while the outgoing one slides
   // out ahead of it in the same direction, like a carousel push transition.
@@ -1304,13 +1322,107 @@
     if (window.innerWidth <= 900) {
       rail.style.height = '';
       visualRail.style.height = '';
+      leftRail.style.height = '';
+      leftRail.style.marginBottom = '';
+      panelsFadeRail.style.height = '';
+      panelsFadeRail.style.marginBottom = '';
+      tabsSticky.style.top = '';
+      visualSticky.style.top = '';
+      panelsFade.style.top = '';
+      leftWrapper.style.paddingTop = '';
       return;
     }
+    // Reset before measuring: leftRail and panelsFadeRail both sit in
+    // document flow BEFORE lastHeading (unlike rail/visualRail, side columns
+    // whose own height can't shift anything above it), so a stale
+    // height+margin left over from a previous call would throw off what
+    // gets measured below before this call even gets to recompute it.
+    // Clearing both first makes every run measure the same true natural
+    // layout instead of building on whatever the last run left behind.
+    leftRail.style.height = '';
+    leftRail.style.marginBottom = '';
+    panelsFadeRail.style.height = '';
+    panelsFadeRail.style.marginBottom = '';
+    // Centers the title+tabs/image block vertically in the viewport: the
+    // gap above the title and the gap below the image end up equal,
+    // instead of a fixed top padding with whatever's left over dumped
+    // entirely below. Measured off title/subtitle/fade directly (with the
+    // 24px flex gap between each, matching .solutions-alt2-left-wrapper's
+    // own `gap`) rather than off leftWrapper itself, since leftWrapper's
+    // own height already includes the padding-top this is about to set —
+    // measuring it here would be measuring the answer as an input to
+    // itself.
+    const visualHeight = visualSticky.getBoundingClientRect().height;
+    const contentHeight =
+      title.getBoundingClientRect().height +
+      24 +
+      subtitle.getBoundingClientRect().height +
+      24 +
+      fade.getBoundingClientRect().height;
+    const verticalGap = Math.max(0, (window.innerHeight - contentHeight - visualHeight) / 2);
+    leftWrapper.style.paddingTop = `${verticalGap}px`;
+    // Tabs AND the visual both park right below the sticky title+fade
+    // block, at the same line — so the image keeps a constant distance
+    // from the title and stays top-aligned with the tabs rail regardless
+    // of how tall the title ever renders (font changes, copy edits,
+    // viewport width, or now the centering gap above).
+    const headerOffsetPx = verticalGap + contentHeight;
+    const headerOffset = `${headerOffsetPx}px`;
+    tabsSticky.style.top = headerOffset;
+    visualSticky.style.top = headerOffset;
     const lastHeadingTop = lastHeading.getBoundingClientRect().top;
     const tabsHeight = tabsSticky.getBoundingClientRect().height;
-    const visualHeight = visualSticky.getBoundingClientRect().height;
+    const leftWrapperHeight = leftWrapper.getBoundingClientRect().height;
+    const panelsFadeHeight = panelsFade.getBoundingClientRect().height;
+    // NOT the same `top` as tabs/visual: a sticky element's box extends
+    // DOWNWARD from `top` (top to top+height), so `top: headerOffset` would
+    // start the fade AT that line and dissolve INTO the readable text below
+    // it — the opposite of what's wanted. Ending the fade's box exactly at
+    // that line (so it dissolves INTO the header above, not into the text
+    // below) means starting it `panelsFadeHeight` earlier.
+    panelsFade.style.top = `${headerOffsetPx - panelsFadeHeight}px`;
     rail.style.height = `${Math.max(0, lastHeadingTop - rail.getBoundingClientRect().top + tabsHeight)}px`;
     visualRail.style.height = `${Math.max(0, lastHeadingTop - visualRail.getBoundingClientRect().top + visualHeight)}px`;
+    // Not the same formula as rail/visualRail either, for the same reason:
+    // this element's `top` is offset by -panelsFadeHeight from theirs, so
+    // (mirroring the same correction leftRail needed) that offset has to be
+    // canceled out of the height formula too, to keep the release point in
+    // sync with theirs. Working through the algebra, the -panelsFadeHeight
+    // in `top` and the "+ panelsFadeHeight" the tabs/visual formula has both
+    // drop out, leaving just the raw distance to lastHeading.
+    const panelsFadeRailHeight = Math.max(0, lastHeadingTop - panelsFadeRail.getBoundingClientRect().top);
+    panelsFadeRail.style.height = `${panelsFadeRailHeight}px`;
+    // Cancels this rail's own push on .solutions-alt2-panels below it — same
+    // idea as leftRail's margin. No `gap` to also cancel here (unlike an
+    // earlier version of this): .solutions-alt2-panels-outer, this rail's
+    // actual parent, doesn't have one.
+    panelsFadeRail.style.marginBottom = `${-panelsFadeRailHeight}px`;
+    // Same rail-height technique as tabs/visual above, but NOT the same
+    // formula: rail/visualRail each release exactly when the last heading
+    // reaches THEIR OWN sticky `top` (headerOffsetPx for both, which is why
+    // reusing "lastHeadingTop - railTop + stickyHeight" gives them the same
+    // release point for free). The headline's own sticky `top` is 0, so that
+    // same formula would instead release it when the heading reaches y:0 —
+    // a later point than headerOffsetPx, since the heading passes 0 only
+    // after it's already passed headerOffsetPx further up-page. Subtracting
+    // headerOffsetPx here re-targets the headline's release at that same
+    // shared line instead of its own (unrelated) `top:0`.
+    const leftRailHeight = Math.max(
+      0,
+      lastHeadingTop - leftRail.getBoundingClientRect().top - headerOffsetPx + leftWrapperHeight
+    );
+    leftRail.style.height = `${leftRailHeight}px`;
+    // Cancels leftRailHeight's own push on everything after it: growing this
+    // rail gives the headline's sticky child more room before releasing,
+    // but .solutions-alt2-block lays it out immediately before the tabs/
+    // panels/visual column (gap:0), so without this the extra height would
+    // shove that whole column down by the same amount — a dead gap while
+    // scrolling, and (worse) it would shift lastHeading by that same amount
+    // on the NEXT call, moving the very target the formula above just
+    // solved for. Pinning this rail's effective flow footprint back to
+    // leftWrapper's own natural height lets its bounding box be as tall as
+    // the release math needs without displacing anything below it.
+    leftRail.style.marginBottom = `${leftWrapperHeight - leftRailHeight}px`;
   };
 
   updateRailHeight();
