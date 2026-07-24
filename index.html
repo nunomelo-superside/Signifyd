@@ -1054,6 +1054,273 @@
   }
 })();
 </script>
+
+<!-- ALT2 — exact duplicate of the .solutions-wrapper section above (all
+     classes prefixed solutions-alt2- instead of solutions-), kept as a
+     separate, independent copy to try a different approach without
+     touching or losing the original or the alt version. Delete this whole
+     section + its CSS counterpart once one approach wins. -->
+<section class="solutions-alt2-wrapper section-divider">
+  <div class="solutions-alt2-block grid-frame">
+  <div class="solutions-alt2-left-wrapper">
+    <h2 class="solutions-alt2-title">
+      Commerce begins<br />
+      before <span class="solutions-alt2-title-muted">the cart</span>.
+    </h2>
+    <p class="solutions-alt2-subtitle">The more context you have before checkout, the more confidently you can approve it.</p>
+  </div>
+
+  <div class="solutions-alt2-scroll-row">
+    <div class="solutions-alt2-tabs-rail">
+      <div class="solutions-alt2-tabs-sticky">
+        <nav class="solutions-alt2-tabs" aria-label="Feature sections">
+          <button type="button" class="solutions-alt2-tab solutions-alt2-tab--active" data-panel-index="0">ACCOUNT INTEGRITY</button>
+          <button type="button" class="solutions-alt2-tab" data-panel-index="1">PURCHASE OPTIMIZATION</button>
+          <button type="button" class="solutions-alt2-tab" data-panel-index="2">RETURNS ASSURANCE</button>
+          <button type="button" class="solutions-alt2-tab" data-panel-index="3">LOREM IPSUM</button>
+        </nav>
+      </div>
+    </div>
+
+    <div class="solutions-alt2-panels">
+      <article class="solutions-alt2-panel" data-panel-index="0">
+        <div class="solutions-alt2-panel-copy">
+          <div class="solutions-alt2-panel-text">
+            <p class="solutions-alt2-panel-heading">
+              Protect every account.<br />
+              From creation to login to modification.
+            </p>
+            <p class="solutions-alt2-panel-desc">Most fraud infrastructure is assembled before the first item hits the cart. Fake identities are created, real accounts are taken over, loyalty balances are drained. Signifyd monitors the full account lifecycle, not just the moment of purchase, so the fraudsters who pass every downstream check still can't get through.</p>
+          </div>
+
+          <div class="solutions-alt2-panel-bottom">
+            <button type="button" class="btn btn--primary">Learn More</button>
+          </div>
+        </div>
+      </article>
+
+      <article class="solutions-alt2-panel" data-panel-index="1">
+        <div class="solutions-alt2-panel-copy">
+          <div class="solutions-alt2-panel-text">
+            <p class="solutions-alt2-panel-heading">Approve more good orders. Stop more bad ones. Guarantee the difference.</p>
+            <p class="solutions-alt2-panel-desc">Every order is a binary decision with asymmetric consequences. Approve fraud and you absorb the chargeback. Decline a good customer and you lose the sale, the relationship, and the lifetime value that goes with it. Signifyd resolves identity and intent in milliseconds, then backs every approved order with a financial guarantee, so the risk stays with us, not you.</p>
+          </div>
+
+          <div class="solutions-alt2-panel-bottom">
+            <button type="button" class="btn btn--primary">Learn More</button>
+          </div>
+        </div>
+      </article>
+
+      <article class="solutions-alt2-panel" data-panel-index="2">
+        <div class="solutions-alt2-panel-copy">
+          <div class="solutions-alt2-panel-text">
+            <p class="solutions-alt2-panel-heading">Easy for the right customers. Hard for everyone else.</p>
+            <p class="solutions-alt2-panel-desc">A blanket returns policy is a gift to abusers and a tax on your best customers. Signifyd scores every post-purchase interaction so you can give high-LTV customers an instant refund, and we back it with a financial guarantee. Your appeasements budget stops feeding the abusers. Your call center volume drops. And the customers worth keeping get their money back fast enough to come back.</p>
+          </div>
+
+          <div class="solutions-alt2-panel-bottom">
+            <button type="button" class="btn btn--primary">Learn More</button>
+          </div>
+        </div>
+      </article>
+
+      <article class="solutions-alt2-panel" data-panel-index="3">
+        <div class="solutions-alt2-panel-copy">
+          <div class="solutions-alt2-panel-text">
+            <p class="solutions-alt2-panel-heading">Quam pellentesque ac nulla lectus pellentesque.</p>
+            <p class="solutions-alt2-panel-desc">Id nibh velit porta nulla orci nunc. Molestie lectus viverra et et diam egestas ornare sit. Leo urna quis at enim commodo placerat bibendum. Et euismod hac scelerisque sed justo natoque mauris. Id amet id mauris libero netus massa. Diam velit euismod sit non orci elit. Sollicitudin ac amet condimentum mattis sed tincidunt ultrices.</p>
+          </div>
+
+          <div class="solutions-alt2-panel-bottom">
+            <button type="button" class="btn btn--primary">Learn More</button>
+          </div>
+        </div>
+      </article>
+    </div>
+
+    <div class="solutions-alt2-visual-rail">
+      <div class="solutions-alt2-visual-sticky">
+        <div class="solutions-alt2-visual-placeholder solutions-alt2-visual-placeholder--active" data-panel-index="0" aria-hidden="true">
+          <img src="assets/assets/Img v2/solutions 01.jpg" alt="" class="solutions-alt2-visual-image" />
+        </div>
+        <div class="solutions-alt2-visual-placeholder" data-panel-index="1" aria-hidden="true">
+          <img src="assets/assets/Img v2/solutions 02.jpg" alt="" class="solutions-alt2-visual-image" />
+        </div>
+        <div class="solutions-alt2-visual-placeholder" data-panel-index="2" aria-hidden="true">
+          <img src="assets/assets/Img v2/solutions 03.jpg" alt="" class="solutions-alt2-visual-image" />
+        </div>
+        <div class="solutions-alt2-visual-placeholder" data-panel-index="3" aria-hidden="true">
+          <img src="assets/assets/Img v2/solutions 04.jpg" alt="" class="solutions-alt2-visual-image" />
+        </div>
+      </div>
+    </div>
+  </div>
+  </div>
+</section>
+
+<script>
+(() => {
+  const section = document.currentScript.previousElementSibling;
+  const tabs = section.querySelectorAll('.solutions-alt2-tab');
+  const panels = section.querySelectorAll('.solutions-alt2-panel');
+  const headings = section.querySelectorAll('.solutions-alt2-panel-heading');
+  const rail = section.querySelector('.solutions-alt2-tabs-rail');
+  const tabsSticky = section.querySelector('.solutions-alt2-tabs-sticky');
+  const visualRail = section.querySelector('.solutions-alt2-visual-rail');
+  const visualSticky = section.querySelector('.solutions-alt2-visual-sticky');
+  const visualPlaceholders = section.querySelectorAll('.solutions-alt2-visual-placeholder');
+
+  // Pushes the incoming placeholder into place while the outgoing one slides
+  // out ahead of it in the same direction, like a carousel push transition.
+  // The incoming panel is snapped (transition disabled) to its off-screen
+  // starting side first so replays always start from the same spot, then
+  // both panels animate together on the next frame.
+  let zCounter = 1;
+  const getPlaceholder = (index) =>
+    Array.from(visualPlaceholders).find((placeholder) => Number(placeholder.dataset.panelIndex) === index);
+
+  const pushPlaceholders = (incoming, outgoing, direction) => {
+    // Scrolling down pushes up: incoming rises in from below, outgoing keeps
+    // rising and exits above. Scrolling up pushes down: incoming drops in
+    // from above, outgoing keeps dropping and exits below.
+    const enteringFromTop = direction === 'up';
+    incoming.style.zIndex = ++zCounter;
+    incoming.style.transition = 'none';
+    incoming.classList.remove('solutions-alt2-visual-placeholder--active');
+    incoming.classList.toggle('solutions-alt2-visual-placeholder--offscreen-top', enteringFromTop);
+    void incoming.offsetWidth;
+    incoming.style.transition = '';
+    incoming.classList.add('solutions-alt2-visual-placeholder--active');
+
+    if (outgoing && outgoing !== incoming) {
+      outgoing.classList.remove('solutions-alt2-visual-placeholder--active');
+      outgoing.classList.toggle('solutions-alt2-visual-placeholder--offscreen-top', !enteringFromTop);
+    }
+  };
+
+  let currentActiveIndex = 0;
+  const setActive = (index) => {
+    if (index === currentActiveIndex) return;
+    const resolvedDirection = index > currentActiveIndex ? 'down' : 'up';
+    const outgoing = getPlaceholder(currentActiveIndex);
+    currentActiveIndex = index;
+
+    tabs.forEach((tab) => {
+      tab.classList.toggle('solutions-alt2-tab--active', Number(tab.dataset.panelIndex) === index);
+    });
+    const incoming = getPlaceholder(index);
+    if (incoming) {
+      pushPlaceholders(incoming, outgoing, resolvedDirection);
+    }
+  };
+
+  // Scrolls via Lenis rather than native scrollIntoView: Lenis has already
+  // hijacked wheel/scroll input and drives the page through its own rAF
+  // loop, so a native smooth-scroll animates on top of that and the two
+  // fight — the page overshoots erratically and the scrollspy below can
+  // catch a heading several tabs past the one actually clicked. Handing
+  // the scroll to Lenis itself keeps it as the single source of truth.
+  tabs.forEach((tab) => {
+    tab.addEventListener('click', () => {
+      const index = Number(tab.dataset.panelIndex);
+      const heading = headings[index];
+      if (!heading) return;
+      setActive(index);
+      if (typeof lenis !== 'undefined') {
+        // The scrollspy below can still catch a neighboring heading crossing
+        // the trigger line mid-transit and re-fire setActive for it before
+        // this one finishes settling. Re-asserting the clicked index once
+        // Lenis reports the scroll actually done corrects that, since
+        // setActive no-ops when it's already the current index.
+        lenis.scrollTo(heading, { onComplete: () => setActive(index) });
+      } else {
+        heading.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    });
+  });
+
+  // Scrollspy: a single observer watching a 1px line at the vertical center
+  // of the viewport (rootMargin -50%/-50% collapses the root to that line).
+  // Whichever heading is crossing it becomes active. This replaced a dual
+  // direction-aware, direction-gated setup (a 50vh down-trigger + a 5vh
+  // up-trigger) that could desync from a click-triggered scroll: as
+  // scrollIntoView animated toward the clicked heading, whichever other
+  // heading happened to be crossing the down-trigger line at that moment
+  // fired its own setActive and won the race, lighting up the wrong tab. A
+  // single center line sidesteps that — the clicked heading ends up
+  // resting exactly on the line it's watched against, so nothing else can
+  // cross it first.
+  const headingTargets = new Map(Array.from(headings).map((heading, i) => [heading, i]));
+
+  // Ignored until the page's own `load` + webfont-ready milestones (the
+  // same ones updateRailHeight below waits on): observing these headings
+  // starts as soon as this script runs, well before images/fonts finish
+  // and layout has settled, and the observer's very first batch reflects
+  // whatever (possibly still-collapsing) layout exists at that instant —
+  // in practice that transient state has quietly reported the LAST
+  // heading as centered and jumped straight to it, with no scroll at all.
+  // Real scroll-driven updates only ever happen after layout is stable, so
+  // nothing legitimate is lost by ignoring everything before that point.
+  let observerArmed = false;
+  const armObserver = () => {
+    observerArmed = true;
+  };
+  window.addEventListener('load', armObserver);
+  if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(armObserver);
+  }
+
+  const observer = new IntersectionObserver(
+    (entries) => {
+      if (!observerArmed) return;
+      entries.forEach((entry) => {
+        if (entry.isIntersecting && headingTargets.has(entry.target)) {
+          setActive(headingTargets.get(entry.target));
+        }
+      });
+    },
+    { rootMargin: '-50% 0px -50% 0px', threshold: 0 }
+  );
+  headingTargets.forEach((_, heading) => observer.observe(heading));
+
+  // Rail height bounds how far each sticky element can travel. Native CSS
+  // `position: sticky` doesn't detach abruptly — it starts a gradual release
+  // the moment its containing block (the rail) has less room left than the
+  // sticky element's own height. So binding both rails to the same fixed
+  // point makes the *taller* element (the 80vh visual) start releasing
+  // earlier than the short tabs list unless each element's own height is
+  // folded into its rail's target — that's what the "+ tabsHeight" /
+  // "+ visualHeight" terms below do; they cancel out algebraically, so both
+  // release at the same scroll position regardless of how tall either one
+  // is.
+  //
+  // That release point is anchored to the last heading's own top (not the
+  // panel's bottom): unstick as soon as the last heading reaches the top of
+  // the sticky sidebar/image, rather than waiting for all of its content
+  // (feature list + button) to scroll past first.
+  const lastHeading = headings[headings.length - 1];
+  const updateRailHeight = () => {
+    if (window.innerWidth <= 900) {
+      rail.style.height = '';
+      visualRail.style.height = '';
+      return;
+    }
+    const lastHeadingTop = lastHeading.getBoundingClientRect().top;
+    const tabsHeight = tabsSticky.getBoundingClientRect().height;
+    const visualHeight = visualSticky.getBoundingClientRect().height;
+    rail.style.height = `${Math.max(0, lastHeadingTop - rail.getBoundingClientRect().top + tabsHeight)}px`;
+    visualRail.style.height = `${Math.max(0, lastHeadingTop - visualRail.getBoundingClientRect().top + visualHeight)}px`;
+  };
+
+  updateRailHeight();
+  window.addEventListener('resize', updateRailHeight);
+  window.addEventListener('load', updateRailHeight);
+  if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(updateRailHeight);
+  }
+})();
+</script>
 <section class="testimonials-block section-divider">
   <div class="testimonials-inner grid-frame">
     <div class="testimonials-heading-group">
