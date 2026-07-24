@@ -1569,6 +1569,7 @@
     parseFloat(getComputedStyle(copyWindow).getPropertyValue('--s4-buffer')) || 96;
   let baseline = 0;
   let maxTranslate = 1;
+  let headingRel = [];   // each heading's offset from the first, i.e. its distance-to-line budget
   const measure = () => {
     if (isMobile()) {
       copyTrack.style.transform = '';
@@ -1578,6 +1579,7 @@
     const last = headings[headings.length - 1].offsetTop;
     baseline = bufferPx() - first;
     maxTranslate = Math.max(1, last - first);
+    headingRel = Array.from(headings).map((h) => h.offsetTop - first);
   };
 
   // ---- Copy scroll: one ratio from the scroller's own rect, no element
@@ -1596,13 +1598,23 @@
     if (isMobile()) return;
     const progress = Math.min(1, Math.max(0, -scroller.getBoundingClientRect().top / scrollTravel()));
     copyTrack.style.transform = `translateY(${baseline - progress * maxTranslate}px)`;
+    // Active topic = the last heading that has reached the alignment line. The
+    // track offset currently sitting on the line is progress * maxTranslate, so
+    // whichever heading's own offset it has passed is the one being read. This is
+    // tied to the reading line itself, not the window centre, so the highlight
+    // matches the copy at the line instead of switching ~200px early.
+    const lineOffset = progress * maxTranslate;
+    let active = 0;
+    for (let i = 0; i < headingRel.length; i++) {
+      if (headingRel[i] <= lineOffset + 1) active = i;
+    }
+    setActive(active);
   };
 
-  // ---- Active-topic detection: the original's "watch a center line, whichever
-  //      heading crosses it wins" observer, re-rooted at the small copy window
-  //      instead of the viewport. IntersectionObserver tracks elements through
-  //      an ancestor transform, so this works even though copyTrack moves via
-  //      transform rather than native scrolling.
+  // ---- Active-topic detection on MOBILE only: no pinning/transform there, so
+  //      fall back to the original's "watch the viewport centre line, whichever
+  //      heading crosses it wins" scrollspy. On desktop this is a no-op because
+  //      applyScroll drives the active index deterministically (above).
   const headingTargets = new Map(Array.from(headings).map((h, i) => [h, i]));
   let observerArmed = false;
   const armObserver = () => { observerArmed = true; };
@@ -1611,14 +1623,14 @@
 
   const observer = new IntersectionObserver(
     (entries) => {
-      if (!observerArmed) return;
+      if (!observerArmed || !isMobile()) return;
       entries.forEach((entry) => {
         if (entry.isIntersecting && headingTargets.has(entry.target)) {
           setActive(headingTargets.get(entry.target));
         }
       });
     },
-    { root: copyWindow, rootMargin: '-50% 0px -50% 0px', threshold: 0 }
+    { root: null, rootMargin: '-50% 0px -50% 0px', threshold: 0 }
   );
   headingTargets.forEach((_, h) => observer.observe(h));
 
