@@ -1582,1191 +1582,6 @@ button {
   line-height: 1.3;
 }
 
-/* Solutions — Account Integrity / Purchase Optimization / Returns Assurance scrollytelling block */
-
-/* Outer full-width wrapper (carries .section-divider and the background)
-   + inner .grid-frame (applied alongside .solutions-block in the HTML) for
-   the 1256px content column — same two-layer pattern every section uses,
-   so the divider is never narrower than the page and a themed background
-   is a one-line change away if this section ever needs one. */
-.solutions-wrapper {
-  width: 100%;
-  background-color: var(--theme-bg);
-}
-
-/* Width/margin/vertical-grid-lines come from .grid-frame. */
-.solutions-block {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 10vh;
-  padding: 112px var(--grid-padding);
-}
-
-/* Left wrapper: headline + subtitle */
-
-.solutions-left-wrapper {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  justify-content: center;
-  gap: 24px;
-  width: 100%;
-}
-
-.solutions-title {
-  margin: 0;
-  width: 100%;
-  font-family: 'Inter', sans-serif;
-  font-weight: 700;
-  font-style: normal;
-  font-size: var(--font-size-3xl);
-  line-height: 1;
-  letter-spacing: -1.26px;
-  color: var(--color-headline);
-  word-break: break-word;
-}
-
-.solutions-title-muted {
-  color: var(--color-text-highlight-1);
-}
-
-.solutions-subtitle {
-  margin: 0;
-  width: 504px;
-  max-width: 100%;
-  font-family: 'Inter', sans-serif;
-  font-weight: 400;
-  font-size: var(--font-size-md);
-  line-height: 1.4;
-  letter-spacing: -0.18px;
-  color: var(--color-text);
-  opacity: 0.8;
-}
-
-/* Scroll row: sticky tabs + stacked scrolling panels */
-
-.solutions-scroll-row {
-  display: grid;
-  grid-template-columns: repeat(12, 1fr);
-  column-gap: 32px;
-  align-items: start;
-  width: 100%;
-}
-
-/* Rail bounds how far the sticky tabs can travel: its height is set by JS
-   to end at the bottom of the last panel's paragraph, so the tabs unstick
-   there instead of following the page to the bottom of the section. */
-.solutions-tabs-rail {
-  grid-column: span 2;
-  width: 204px;
-  position: relative;
-}
-
-.solutions-tabs-sticky {
-  position: sticky;
-  top: 10vh;
-}
-
-.solutions-tabs {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 8px;
-  padding-top: 4px;
-}
-
-.solutions-tab {
-  position: relative;
-  margin: 0;
-  padding: 0;
-  border: none;
-  background: none;
-  width: 100%;
-  font-family: 'Fragment Mono', monospace;
-  font-weight: 400;
-  font-style: normal;
-  font-size: var(--font-size-2xs);
-  line-height: 1.1;
-  letter-spacing: -0.28px;
-  color: var(--color-text);
-  opacity: 0.2;
-  text-align: left;
-  text-transform: uppercase;
-  word-break: break-word;
-  cursor: pointer;
-  transition: opacity 0.2s ease;
-}
-
-.solutions-tab--active {
-  opacity: 0.8;
-}
-
-.solutions-tab::before {
-  content: '';
-  position: absolute;
-  left: -32px;
-  top: 50%;
-  width: 16px;
-  height: 1px;
-  background-color: var(--color-text);
-  opacity: 0;
-  transition: opacity 0.2s ease;
-}
-
-.solutions-tab--active::before {
-  opacity: 1;
-}
-
-/* Stacked panels */
-
-.solutions-panels {
-  grid-column: span 5;
-  display: flex;
-  flex-direction: column;
-  gap: 50vh;
-  min-width: 0;
-}
-
-.solutions-panel {
-  display: flex;
-  width: 100%;
-}
-
-/* Breathing room before the next section. Not load-bearing for the sticky
-   release timing itself — that's handled in JS by accounting for each
-   sticky element's own height, so this can be any value without affecting
-   when the tabs/visual actually unstick. */
-.solutions-panel:last-child {
-  margin-bottom: 20vh;
-}
-
-.solutions-panel-copy {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 24px;
-  width: 100%;
-  min-width: 0;
-}
-
-.solutions-panel-text {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 24px;
-  width: 100%;
-  word-break: break-word;
-}
-
-.solutions-panel-heading {
-  margin: 0;
-  width: 100%;
-  font-family: 'Inter', sans-serif;
-  font-weight: 500;
-  font-style: normal;
-  font-size: var(--font-size-2xl);
-  line-height: 1.1;
-  letter-spacing: -0.64px;
-  color: var(--color-headline);
-  /* Matches the sticky sidebar's `top` offset so scrollIntoView({block:'start'})
-     lands the heading at the same line where the tab indicator swaps. */
-  scroll-margin-top: 10vh;
-}
-
-.solutions-panel-desc {
-  margin: 0;
-  width: 100%;
-  font-family: 'Inter', sans-serif;
-  font-weight: 400;
-  font-size: var(--font-size-sm);
-  line-height: 1.5;
-  letter-spacing: -0.16px;
-  color: var(--color-text);
-  opacity: 0.8;
-}
-
-.solutions-panel-bottom {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 40px;
-  width: 80%;
-  text-wrap-style: pretty;
-}
-
-/* Shared visual rail: one sticky container holding all four images,
-   cross-fading based on which panel is active instead of each panel
-   carrying its own image. Bounded by the same rail-height technique as the
-   tabs, so both unstick together at the end. */
-
-.solutions-visual-rail {
-  grid-column: span 5;
-  position: relative;
-}
-
-.solutions-visual-sticky {
-  position: sticky;
-  top: 10vh;
-  height: 80vh;
-  overflow: hidden;
-}
-
-/* Base (unset) sits just below the visible frame, so the default entrance
-   pushes up into place to match a downward scroll. JS flips the resting
-   side to above (--offscreen-top) for upward-scroll entrances/exits, and
-   drives the actual translateY(0) "active" state so incoming/outgoing
-   panels animate together as one push. */
-.solutions-visual-placeholder {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  height: 100%;
-  padding: 57.6px;
-  overflow: hidden;
-  border-radius: 8px;
-  background-color: var(--color-background-lighter);
-  transform: translateY(100%);
-  transition: transform 0.6s cubic-bezier(0.65, 0, 0.35, 1);
-  pointer-events: none;
-  z-index: 1;
-}
-
-.solutions-visual-placeholder--offscreen-top {
-  transform: translateY(-100%);
-}
-
-.solutions-visual-placeholder--active {
-  transform: translateY(0);
-  pointer-events: auto;
-}
-
-.solutions-visual-image {
-  display: block;
-  width: 100%;
-  height: auto;
-}
-
-/* Responsive */
-
-@media (max-width: 900px) {
-  .solutions-tabs-rail {
-    grid-column: 1;
-    height: auto !important;
-  }
-
-  .solutions-tabs-sticky {
-    position: static;
-  }
-
-  .solutions-scroll-row {
-    grid-template-columns: 1fr;
-    row-gap: 32px;
-  }
-
-  .solutions-panels {
-    grid-column: 1;
-  }
-
-  .solutions-panel {
-    min-height: 0;
-  }
-
-  .solutions-panel:last-child {
-    margin-bottom: 0;
-  }
-
-  .solutions-visual-rail {
-    grid-column: 1;
-    height: auto !important;
-  }
-
-  .solutions-visual-sticky {
-    position: relative;
-    height: 60vh;
-  }
-
-  .solutions-tabs {
-    flex-direction: row;
-    flex-wrap: wrap;
-    gap: 16px 24px;
-  }
-
-  .solutions-tab::before {
-    display: none;
-  }
-}
-
-@media (max-width: 768px) {
-  .solutions-block {
-    padding: 64px 20px;
-  }
-
-  .solutions-title {
-    font-size: 40px;
-    letter-spacing: -1.2px;
-  }
-
-  .solutions-subtitle {
-    width: 100%;
-  }
-}
-
-/* Solutions ALT — exact duplicate of the section above (all classes
-   prefixed solutions-alt- instead of solutions-) kept as a separate,
-   independent copy so a different approach can be tried here without
-   touching or losing the original. Delete this whole block + its HTML
-   counterpart once one approach wins. */
-
-/* Solutions — Account Integrity / Purchase Optimization / Returns Assurance scrollytelling block */
-
-/* Outer full-width wrapper (carries .section-divider and the background)
-   + inner .grid-frame (applied alongside .solutions-alt-block in the HTML) for
-   the 1256px content column — same two-layer pattern every section uses,
-   so the divider is never narrower than the page and a themed background
-   is a one-line change away if this section ever needs one. */
-.solutions-alt-wrapper {
-  width: 100%;
-  background-color: var(--theme-bg);
-}
-
-/* Width/margin/vertical-grid-lines come from .grid-frame. */
-.solutions-alt-block {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 10vh;
-  padding: 112px var(--grid-padding);
-}
-
-/* Left wrapper: headline + subtitle */
-
-.solutions-alt-left-wrapper {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  justify-content: center;
-  gap: 24px;
-  width: 100%;
-}
-
-.solutions-alt-title {
-  margin: 0;
-  width: 100%;
-  font-family: 'Inter', sans-serif;
-  font-weight: 700;
-  font-style: normal;
-  font-size: var(--font-size-3xl);
-  line-height: 1;
-  letter-spacing: -1.26px;
-  color: var(--color-headline);
-  word-break: break-word;
-}
-
-.solutions-alt-title-muted {
-  color: var(--color-text-highlight-1);
-}
-
-.solutions-alt-subtitle {
-  margin: 0;
-  width: 504px;
-  max-width: 100%;
-  font-family: 'Inter', sans-serif;
-  font-weight: 400;
-  font-size: var(--font-size-md);
-  line-height: 1.4;
-  letter-spacing: -0.18px;
-  color: var(--color-text);
-  opacity: 0.8;
-}
-
-/* Scroll row: sticky tabs + stacked scrolling panels */
-
-.solutions-alt-scroll-row {
-  display: grid;
-  grid-template-columns: repeat(12, 1fr);
-  column-gap: 32px;
-  align-items: start;
-  width: 100%;
-}
-
-/* Rail bounds how far the sticky tabs can travel: its height is set by JS
-   to end at the bottom of the last panel's paragraph, so the tabs unstick
-   there instead of following the page to the bottom of the section. */
-.solutions-alt-tabs-rail {
-  grid-column: span 2;
-  width: 204px;
-  position: relative;
-}
-
-.solutions-alt-tabs-sticky {
-  position: sticky;
-  top: 10vh;
-}
-
-.solutions-alt-tabs {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 8px;
-  padding-top: 4px;
-}
-
-.solutions-alt-tab {
-  position: relative;
-  margin: 0;
-  padding: 0;
-  border: none;
-  background: none;
-  width: 100%;
-  font-family: 'Fragment Mono', monospace;
-  font-weight: 400;
-  font-style: normal;
-  font-size: var(--font-size-2xs);
-  line-height: 1.1;
-  letter-spacing: -0.28px;
-  color: var(--color-text);
-  opacity: 0.2;
-  text-align: left;
-  text-transform: uppercase;
-  word-break: break-word;
-  cursor: pointer;
-  transition: opacity 0.2s ease;
-}
-
-.solutions-alt-tab--active {
-  opacity: 0.8;
-}
-
-.solutions-alt-tab::before {
-  content: '';
-  position: absolute;
-  left: -32px;
-  top: 50%;
-  width: 16px;
-  height: 1px;
-  background-color: var(--color-text);
-  opacity: 0;
-  transition: opacity 0.2s ease;
-}
-
-.solutions-alt-tab--active::before {
-  opacity: 1;
-}
-
-/* Stacked panels — each row now carries its own copy + visual side by side
-   (see .solutions-alt-panel-visual below), instead of a separate shared
-   visual column synced via JS, so the 50vh gap (sized for sticky-release
-   scroll distance) is no longer needed — just normal breathing room
-   between rows. */
-
-.solutions-alt-panels {
-  grid-column: span 10;
-  display: flex;
-  flex-direction: column;
-  gap: 160px;
-  min-width: 0;
-}
-
-.solutions-alt-panel {
-  display: flex;
-  align-items: flex-start;
-  height: 400px;
-  gap: 64px;
-  width: 100%;
-}
-
-.solutions-alt-panel-copy {
-  display: flex;
-  flex: 0 0 478px;
-  width: 478px;
-  flex-direction: column;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 24px;
-  min-width: 0;
-}
-
-.solutions-alt-panel-text {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 24px;
-  width: 100%;
-  word-break: break-word;
-}
-
-.solutions-alt-panel-heading {
-  margin: 0;
-  width: 100%;
-  font-family: 'Inter', sans-serif;
-  font-weight: 500;
-  font-style: normal;
-  font-size: var(--font-size-2xl);
-  line-height: 1.1;
-  letter-spacing: -0.64px;
-  color: var(--color-headline);
-  /* Matches the sticky sidebar's `top` offset so scrollIntoView({block:'start'})
-     lands the heading at the same line where the tab indicator swaps. */
-  scroll-margin-top: 10vh;
-}
-
-.solutions-alt-panel-desc {
-  margin: 0;
-  width: 100%;
-  font-family: 'Inter', sans-serif;
-  font-weight: 400;
-  font-size: var(--font-size-sm);
-  line-height: 1.5;
-  letter-spacing: -0.16px;
-  color: var(--color-text);
-  opacity: 0.8;
-}
-
-.solutions-alt-panel-bottom {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 40px;
-  width: 80%;
-  text-wrap-style: pretty;
-}
-
-/* Per-row visual: each panel now carries its own image container instead
-   of sharing one sticky cross-fading column. Fills the row's own 400px
-   height (set on .solutions-alt-panel) rather than the old shared rail's
-   fixed 80vh. */
-.solutions-alt-panel-visual {
-  display: flex;
-  flex: 1;
-  align-items: center;
-  justify-content: center;
-  min-width: 0;
-  height: 100%;
-  padding: 57.6px;
-  border-radius: 8px;
-  background-color: var(--color-background-lighter);
-}
-
-.solutions-alt-visual-image {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-}
-
-/* Responsive */
-
-@media (max-width: 900px) {
-  .solutions-alt-tabs-rail {
-    grid-column: 1;
-    height: auto !important;
-  }
-
-  .solutions-alt-tabs-sticky {
-    position: static;
-  }
-
-  .solutions-alt-scroll-row {
-    grid-template-columns: 1fr;
-    row-gap: 32px;
-  }
-
-  .solutions-alt-panels {
-    grid-column: 1;
-  }
-
-  .solutions-alt-panel {
-    flex-direction: column;
-    align-items: stretch;
-    height: auto;
-    min-height: 0;
-  }
-
-  .solutions-alt-tabs {
-    flex-direction: row;
-    flex-wrap: wrap;
-    gap: 16px 24px;
-  }
-
-  .solutions-alt-tab::before {
-    display: none;
-  }
-}
-
-@media (max-width: 768px) {
-  .solutions-alt-block {
-    padding: 64px 20px;
-  }
-
-  .solutions-alt-title {
-    font-size: 40px;
-    letter-spacing: -1.2px;
-  }
-
-  .solutions-alt-subtitle {
-    width: 100%;
-  }
-}
-
-/* Solutions ALT2 — exact duplicate of the .solutions-wrapper section above
-   (all classes prefixed solutions-alt2- instead of solutions-) kept as a
-   separate, independent copy so a different approach can be tried here
-   without touching or losing the original or the alt version. Delete this
-   whole block + its HTML counterpart once one approach wins. */
-
-/* Solutions — Account Integrity / Purchase Optimization / Returns Assurance scrollytelling block */
-
-/* Outer full-width wrapper (carries .section-divider and the background)
-   + inner .grid-frame (applied alongside .solutions-alt2-block in the HTML) for
-   the 1256px content column — same two-layer pattern every section uses,
-   so the divider is never narrower than the page and a themed background
-   is a one-line change away if this section ever needs one. */
-.solutions-alt2-wrapper {
-  width: 100%;
-  background-color: var(--theme-bg);
-}
-
-/* Width/margin/vertical-grid-lines come from .grid-frame. */
-/* No gap between the left-wrapper (title+fade) and the scroll-row: once
-   the title is stuck, the tabs/image rail parks flush against its bottom
-   edge (see the JS-computed `top` offsets) with zero space between them —
-   removing the gap here means the very first render (before any scroll)
-   already looks like that, instead of starting with a big gap that then
-   closes up as soon as you scroll. Title and anchor nav read as one
-   continuous block from the start. */
-/* No top padding here — it moved onto the sticky left-wrapper itself (see
-   below). The block's own padding only holds while the title is still in
-   its normal-flow spot; once scrolled into the stuck position at top:0, a
-   gap here would vanish, leaving the title glued to the very edge of the
-   viewport with nothing to stop content re-escaping through it. Padding
-   baked into the sticky box's own border box persists at every scroll
-   position, stuck or not, and (being part of that box) stays covered by
-   its background the same as the rest of it. */
-.solutions-alt2-block {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 0;
-  /* Bottom trimmed from 112px: that plus the last panel's old 20vh margin
-     (removed below) used to add a long stretch of dead scroll after the
-     tabs/image had already released — the section's own background kept
-     dominating the viewport well after the last item's heading had
-     already reached the anchor menu's top line. The centering gap (see
-     .solutions-alt2-left-wrapper) already gives the sticky content its
-     own breathing room while it's active; this is just what's left after
-     it releases, kept small on purpose. */
-  padding: 0 var(--grid-padding) 48px;
-}
-
-/* Left rail: bounds how far the sticky headline block can travel, same
-   technique as .solutions-alt2-tabs-rail/.solutions-alt2-visual-rail below
-   (height set by JS to end at the last heading's top). Without this, the
-   headline's containing block was .solutions-alt2-block itself, which
-   only ends once the (much taller) panels column scrolls past — so the
-   headline stayed pinned long after the tabs/image had already released.
-   Bounding it the same way makes all three release together. */
-.solutions-alt2-left-rail {
-  position: relative;
-  width: 100%;
-}
-
-/* Left wrapper: headline + subtitle. Sticky (along with the fade band
-   below it) so the title stays pinned through the scroll instead of
-   scrolling away once the panels start — same idea as the tabs rail below
-   it, just anchored higher up. Explicit z-index (rather than leaning on
-   default paint order alone) guarantees the plain, non-positioned panel
-   text always stays hidden underneath its opaque background once scrolled
-   behind it — a hard crop, not just a translucent wash. tabsSticky's AND
-   visualSticky's own `top` are both nudged down by this element's rendered
-   height via JS (see the section's script) so the tabs rail and the image
-   park right below it, at the same line, instead of colliding with it. */
-.solutions-alt2-left-wrapper {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  justify-content: center;
-  gap: 24px;
-  width: 100%;
-  position: sticky;
-  /* Flush with the viewport top, not top:10vh — a panel scrolling up is
-     normal-flow, not sticky, so it keeps rising past this element's Y-band
-     once it clears it, same as it would past anything else in the
-     document. Sticking this at 10vh left a bare 10vh strip at the very
-     top of the viewport with nothing painted over it, so a panel would
-     render fully visible in that strip for a moment before finally
-     scrolling off past y:0 — visible proof the "opaque cover" only masks
-     the overlap window, not the whole escape. Pinning to the actual top
-     edge removes that gap entirely: there's no space above y:0 for
-     anything to be visible in, so a panel goes straight from
-     covered-by-this-background to off-viewport with nothing in between. */
-  top: 0;
-  z-index: 2;
-  background-color: var(--theme-bg);
-  /* Breathing room from the viewport's actual top edge — baked in here
-     instead of on .solutions-alt2-block (see that rule's comment) so it
-     survives being stuck at top:0. Part of this box's own border box, so
-     it's covered by the background-color above like everything else in
-     it. Set via JS (see the section's script), not a fixed value: it's
-     computed as half of whatever vertical space is left over after the
-     title+tabs/image block's own height, so that block sits centered in
-     the viewport instead of pinned to a fixed offset from the top with
-     the leftover space dumped entirely below. 0 here is just the pre-JS
-     fallback. */
-  padding-top: 0;
-}
-
-/* Invisible spacer now — the actual visible dissolve moved to
-   .solutions-alt2-panels-fade (anchored inside the scrolling text column
-   itself, see that rule's comment for why). Kept as a same-size, unpainted
-   box rather than removed: its height still feeds into the vertical
-   centering and headerOffsetPx math below, so removing it would shift
-   the title's own position/spacing. */
-.solutions-alt2-fade {
-  width: 100%;
-  height: 96px;
-  flex-shrink: 0;
-  pointer-events: none;
-}
-
-.solutions-alt2-title {
-  margin: 0;
-  width: 100%;
-  font-family: 'Inter', sans-serif;
-  font-weight: 700;
-  font-style: normal;
-  font-size: var(--font-size-3xl);
-  line-height: 1;
-  letter-spacing: -1.26px;
-  color: var(--color-headline);
-  word-break: break-word;
-}
-
-.solutions-alt2-title-muted {
-  color: var(--color-text-highlight-1);
-}
-
-.solutions-alt2-subtitle {
-  margin: 0;
-  width: 504px;
-  max-width: 100%;
-  font-family: 'Inter', sans-serif;
-  font-weight: 400;
-  font-size: var(--font-size-md);
-  line-height: 1.4;
-  letter-spacing: -0.18px;
-  color: var(--color-text);
-  opacity: 0.8;
-}
-
-/* Scroll row: sticky tabs + stacked scrolling panels */
-
-.solutions-alt2-scroll-row {
-  display: grid;
-  grid-template-columns: repeat(12, 1fr);
-  column-gap: 32px;
-  align-items: start;
-  width: 100%;
-}
-
-/* Rail bounds how far the sticky tabs can travel: its height is set by JS
-   to end at the bottom of the last panel's paragraph, so the tabs unstick
-   there instead of following the page to the bottom of the section. */
-.solutions-alt2-tabs-rail {
-  /* Explicit column+row (not just `span 2`, auto row): all four items in
-     this row (tabs-rail, panels-fade-rail, panels, visual-rail) need
-     explicit placement now — .solutions-alt2-panels-fade-rail overlaps
-     .solutions-alt2-panels' own cell on purpose, and leaving even ONE of
-     the four to auto-place means the auto-placement algorithm treats that
-     cell as "taken" and pushes the auto-placed one down to the NEXT row
-     instead of overlapping — which is exactly what happened when only
-     panels-fade-rail had an explicit row: .solutions-alt2-panels got shoved
-     into row 2 while .solutions-alt2-visual-rail stayed in row 1, so they
-     no longer shared a start line at all. Pinning all four to row 1 keeps
-     them exactly where they've always been. */
-  grid-column: 1 / span 2;
-  grid-row: 1;
-  width: 204px;
-  position: relative;
-}
-
-/* Deliberately overlaps .solutions-alt2-panels' own grid cell (same start
-   column + span) rather than living inside that flex column as a child —
-   that was tried first and hit two different bugs depending on how it was
-   positioned (position:absolute parent → sticky child doesn't reliably
-   engage; normal-flow parent inside the `gap: 50vh` list → the negative
-   margin needed to cancel both its own height AND that gap came out more
-   negative than the rail was tall, which seems to have broken the sticky
-   child too). A second attempt anchored it inside .solutions-alt2-visual-sticky
-   instead (mirroring .solutions-alt2-bottom-mask) — but that only reaches
-   past its own sticky ancestor's edge in ONE direction: bottom-mask extends
-   below via `top: 100%` and works, while this fade needs to extend ABOVE
-   via a negative `top` (or equivalently `bottom: 100%`), and both render
-   nothing at all, seemingly clipped, despite no `overflow` set anywhere in
-   the chain. Being its own grid-overlapping sibling sidesteps both
-   problems: same proven shape as .solutions-alt2-tabs-rail (plain
-   normal-flow rail, JS height, sticky child, simple margin cancellation),
-   just placed in .solutions-alt2-panels' column instead of its own. */
-.solutions-alt2-panels-fade-rail {
-  grid-column: 3 / span 5;
-  grid-row: 1;
-  position: relative;
-  pointer-events: none;
-}
-
-.solutions-alt2-panels-fade {
-  position: sticky;
-  top: 10vh;
-  height: 96px;
-  z-index: 5;
-  background: linear-gradient(to bottom, red 0%, transparent 100%);
-  pointer-events: none;
-}
-
-.solutions-alt2-tabs-sticky {
-  position: sticky;
-  top: 10vh;
-}
-
-.solutions-alt2-tabs {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 8px;
-  padding-top: 4px;
-}
-
-.solutions-alt2-tab {
-  position: relative;
-  margin: 0;
-  padding: 0;
-  border: none;
-  background: none;
-  width: 100%;
-  font-family: 'Fragment Mono', monospace;
-  font-weight: 400;
-  font-style: normal;
-  font-size: var(--font-size-2xs);
-  line-height: 1.1;
-  letter-spacing: -0.28px;
-  color: var(--color-text);
-  opacity: 0.2;
-  text-align: left;
-  text-transform: uppercase;
-  word-break: break-word;
-  cursor: pointer;
-  transition: opacity 0.2s ease;
-}
-
-.solutions-alt2-tab--active {
-  opacity: 0.8;
-}
-
-.solutions-alt2-tab::before {
-  content: '';
-  position: absolute;
-  left: -24px;
-  top: 50%;
-  width: 16px;
-  height: 1px;
-  background-color: var(--color-text);
-  opacity: 0;
-  transition: opacity 0.2s ease;
-}
-
-.solutions-alt2-tab--active::before {
-  opacity: 1;
-}
-
-.solutions-alt2-panels {
-  grid-column: 3 / span 5;
-  grid-row: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 50vh;
-  min-width: 0;
-}
-
-.solutions-alt2-panel {
-  display: flex;
-  width: 100%;
-}
-
-/* Was 20vh of breathing room before the next section. Removed: it was
-   never load-bearing for the sticky release itself (that's bound in JS to
-   the last heading's own position, not this margin), it just meant the
-   page kept scrolling through empty space for a while after the tabs/
-   image had already released and the last heading had already reached
-   the anchor menu's top line — the section's background stuck around
-   dominating the viewport long after it had "finished". */
-.solutions-alt2-panel:last-child {
-  margin-bottom: 0;
-}
-
-.solutions-alt2-panel-copy {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 24px;
-  width: 100%;
-  min-width: 0;
-}
-
-.solutions-alt2-panel-text {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 24px;
-  width: 100%;
-  word-break: break-word;
-}
-
-.solutions-alt2-panel-heading {
-  margin: 0;
-  width: 100%;
-  font-family: 'Inter', sans-serif;
-  font-weight: 500;
-  font-style: normal;
-  font-size: var(--font-size-2xl);
-  line-height: 1.1;
-  letter-spacing: -0.64px;
-  color: var(--color-headline);
-  /* Matches the sticky sidebar's `top` offset so scrollIntoView({block:'start'})
-     lands the heading at the same line where the tab indicator swaps. */
-  scroll-margin-top: 10vh;
-}
-
-.solutions-alt2-panel-desc {
-  margin: 0;
-  width: 100%;
-  font-family: 'Inter', sans-serif;
-  font-weight: 400;
-  font-size: var(--font-size-sm);
-  line-height: 1.5;
-  letter-spacing: -0.16px;
-  color: var(--color-text);
-  opacity: 0.8;
-}
-
-.solutions-alt2-panel-bottom {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 40px;
-  width: 80%;
-  text-wrap-style: pretty;
-}
-
-/* Shared visual rail: one sticky container holding all four images,
-   cross-fading based on which panel is active instead of each panel
-   carrying its own image. Bounded by the same rail-height technique as the
-   tabs, so both unstick together at the end. `top` below is just the
-   pre-JS fallback — the section's script overrides it to match the tabs
-   rail's offset (title+fade height), so the image stays top-aligned with
-   the anchor selector instead of the old fixed 10vh. */
-
-.solutions-alt2-visual-rail {
-  grid-column: 8 / span 5;
-  grid-row: 1;
-  position: relative;
-}
-
-.solutions-alt2-visual-sticky {
-  position: sticky;
-  top: 10vh;
-  /* Fixed px, not viewport-relative (was 80vh) — a constant size regardless
-     of browser window height. overflow:hidden moved onto
-     .solutions-alt2-visual-crossfade (below) instead of living here, so
-     this box's own bounds can still host the bottom mask past its edge
-     without clipping it — see that rule's comment. */
-  height: 600px;
-}
-
-/* Wraps just the crossfading placeholders, so it — not the sticky box
-   itself — is what clips them to a clean "push" transition as they slide
-   in/out via transform. Keeping this separate from
-   .solutions-alt2-visual-sticky is what lets the bottom mask below sit
-   inside that sticky box (inheriting its exact stuck/released timing for
-   free, since position:absolute in a sticky ancestor just tracks wherever
-   that ancestor currently is) while still rendering past its bounds
-   instead of being clipped along with the placeholders. */
-.solutions-alt2-visual-crossfade {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-}
-
-/* Bottom mask: mirrors the sticky title at the top, not just its fade —
-   the title HIDES escaping panel text because of its own opaque
-   background-color; the fade drawn on it is only the visible dissolve for
-   the last 96px before it. A gradient alone, with nothing opaque behind
-   it, would just be a translucent tint that panel text still shows right
-   through. This supplies that opaque backing itself: transparent for the
-   first 96px (the visible fade, blending into the panel/image content
-   above it), solid for the rest of its height (the actual hide).
-   Positioned absolute, anchored to .solutions-alt2-visual-sticky (its
-   nearest positioned ancestor) rather than being sticky itself — that's
-   deliberate: it always sits exactly at that box's bottom edge and
-   inherits its stuck/released state automatically, with no separate
-   height-bounding math of its own to keep in sync (a dedicated 4th grid
-   rail for this, JS-bound the same way as the tabs/visual rails, is what
-   broke last time — this sidesteps that whole mechanism). left/width use
-   percentages of ITS OWN containing block (this sticky box, i.e. the
-   image column) to reach across the panel-text column beside it, which
-   only works because that column and this one are equal width
-   (grid-column: span 5 each) — -100% steps left by exactly one such
-   column, 200% covers two of them, the extra 32px in both is the
-   column-gap between them. Doesn't reach the tabs column — that one's
-   static, nothing scrolling there needs hiding. */
-.solutions-alt2-bottom-mask {
-  position: absolute;
-  top: 100%;
-  left: calc(-100% - 32px);
-  width: calc(200% + 32px);
-  height: 300px;
-  z-index: 2;
-  background: linear-gradient(to bottom, transparent 0%, var(--theme-bg) 96px, var(--theme-bg) 100%);
-  pointer-events: none;
-}
-
-/* Base (unset) sits just below the visible frame, so the default entrance
-   pushes up into place to match a downward scroll. JS flips the resting
-   side to above (--offscreen-top) for upward-scroll entrances/exits, and
-   drives the actual translateY(0) "active" state so incoming/outgoing
-   panels animate together as one push. */
-.solutions-alt2-visual-placeholder {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  height: 100%;
-  padding: 57.6px;
-  overflow: hidden;
-  border-radius: 8px;
-  background-color: var(--color-background-lighter);
-  transform: translateY(100%);
-  transition: transform 0.6s cubic-bezier(0.65, 0, 0.35, 1);
-  pointer-events: none;
-  z-index: 1;
-}
-
-.solutions-alt2-visual-placeholder--offscreen-top {
-  transform: translateY(-100%);
-}
-
-.solutions-alt2-visual-placeholder--active {
-  transform: translateY(0);
-  pointer-events: auto;
-}
-
-.solutions-alt2-visual-image {
-  display: block;
-  width: 100%;
-  height: auto;
-}
-
-/* Responsive */
-
-@media (max-width: 900px) {
-  /* Sticky is off below this width, so the top padding moves back onto the
-     block itself (its own top padding is 0 above this breakpoint — see
-     that rule's comment) instead of living on the now-static left-wrapper. */
-  .solutions-alt2-block {
-    padding-top: 112px;
-  }
-
-  .solutions-alt2-left-rail {
-    height: auto !important;
-  }
-
-  .solutions-alt2-left-wrapper {
-    position: static;
-    background-color: transparent;
-    padding-top: 0;
-  }
-
-  .solutions-alt2-fade {
-    display: none;
-  }
-
-  .solutions-alt2-tabs-rail {
-    grid-column: 1;
-    height: auto !important;
-  }
-
-  .solutions-alt2-tabs-sticky {
-    position: static;
-  }
-
-  .solutions-alt2-panels-fade-rail {
-    display: none;
-  }
-
-  .solutions-alt2-scroll-row {
-    grid-template-columns: 1fr;
-    row-gap: 32px;
-  }
-
-  .solutions-alt2-panels {
-    grid-column: 1;
-  }
-
-  .solutions-alt2-panel {
-    min-height: 0;
-  }
-
-  .solutions-alt2-panel:last-child {
-    margin-bottom: 0;
-  }
-
-  .solutions-alt2-visual-rail {
-    grid-column: 1;
-    height: auto !important;
-  }
-
-  .solutions-alt2-visual-sticky {
-    position: relative;
-    height: 60vh;
-  }
-
-  .solutions-alt2-bottom-mask {
-    display: none;
-  }
-
-  .solutions-alt2-tabs {
-    flex-direction: row;
-    flex-wrap: wrap;
-    gap: 16px 24px;
-  }
-
-  .solutions-alt2-tab::before {
-    display: none;
-  }
-}
-
-@media (max-width: 768px) {
-  .solutions-alt2-block {
-    padding: 64px 20px;
-  }
-
-  .solutions-alt2-title {
-    font-size: 40px;
-    letter-spacing: -1.2px;
-  }
-
-  .solutions-alt2-subtitle {
-    width: 100%;
-  }
-}
-
 /* Testimonials carousel */
 
 /* A real .grid-frame after all (applied in the HTML) — the carousel's peek
@@ -3832,21 +2647,21 @@ button {
 }
 
 /* ==========================================================================
-   SOLUTIONS4 — independent rebuild of the Solutions section.
+   SOLUTIONS — "Commerce begins before the cart" scrollytelling section.
    Centering is pure CSS (a single sticky, flex-centered stage); the only JS
-   measurements are copyTrack geometry + one scroll ratio. See solutions4-brief.md.
-   Tunable knobs live on .solutions4-wrapper as custom properties.
+   measurements are copyTrack geometry + one scroll ratio. See HANDOFF.md.
+   Tunable knobs live on .solutions-wrapper as custom properties.
    ========================================================================== */
-.solutions4-wrapper {
-  --s4-buffer: 48px;        /* total gap above the alignment line (hard part + fade) */
-  --s4-top-fade: 44px;      /* of that gap, how much is the actual fade gradient */
-  --s4-fade-drop: 24px;     /* push the top fade down past the line, so copy at the line is still fading */
-  --s4-window: 502px;       /* FIXED masked-window height — sized so the whole inner block is ~700px */
-  --s4-bottom-fade: 56px;   /* soft bottom edge of the copy window */
-  --s4-gap: 24vh;           /* spacing between topics along the copy track */
-  --s4-panels: 4;           /* number of topics — drives the scroller height */
-  --s4-runway-vh: 10;       /* dwell/release runway after the last topic (in vh) */
-  --s4-pad: 56px;           /* vertical breathing room inside the pinned stage */
+.solutions-wrapper {
+  --solutions-buffer: 48px;        /* total gap above the alignment line (hard part + fade) */
+  --solutions-top-fade: 44px;      /* of that gap, how much is the actual fade gradient */
+  --solutions-fade-drop: 24px;     /* push the top fade down past the line, so copy at the line is still fading */
+  --solutions-window: 502px;       /* FIXED masked-window height — sized so the whole inner block is ~700px */
+  --solutions-bottom-fade: 56px;   /* soft bottom edge of the copy window */
+  --solutions-gap: 24vh;           /* spacing between topics along the copy track */
+  --solutions-panels: 4;           /* number of topics — drives the scroller height */
+  --solutions-runway-vh: 10;       /* dwell/release runway after the last topic (in vh) */
+  --solutions-pad: 56px;           /* vertical breathing room inside the pinned stage */
   width: 100%;
   background-color: var(--theme-bg);
 }
@@ -3855,26 +2670,26 @@ button {
    the ONLY dead scroll — kept small so the section releases soon after the last
    topic lands, without changing the copy pacing (active travel = panels-1 screens
    either way). */
-.solutions4-scroller {
-  height: calc(var(--s4-panels) * 100vh + var(--s4-runway-vh) * 1vh);
+.solutions-scroller {
+  height: calc(var(--solutions-panels) * 100vh + var(--solutions-runway-vh) * 1vh);
 }
 
 /* The single pinned element AND the framed container: grid-frame lives here (not
    on the inner block) so the vertical grid lines span the full 100vh section
    instead of only the content's height. Fixed 100vh, content flex-centered, with
-   --s4-pad of breathing room kept inside the lined box. */
-.solutions4-stage {
+   --solutions-pad of breathing room kept inside the lined box. */
+.solutions-stage {
   position: sticky;
   top: 0;
   height: 100vh;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  padding-top: var(--s4-pad);
-  padding-bottom: var(--s4-pad);
+  padding-top: var(--solutions-pad);
+  padding-bottom: var(--solutions-pad);
 }
 
-.solutions4-block {
+.solutions-block {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -3882,7 +2697,7 @@ button {
   width: 100%;
 }
 
-.solutions4-title {
+.solutions-title {
   margin: 0;
   width: 100%;
   font-family: 'Inter', sans-serif;
@@ -3894,11 +2709,11 @@ button {
   word-break: break-word;
 }
 
-.solutions4-title-muted {
+.solutions-title-muted {
   color: var(--color-text-highlight-1);
 }
 
-.solutions4-subtitle {
+.solutions-subtitle {
   margin: 0;
   width: 504px;
   max-width: 100%;
@@ -3911,19 +2726,19 @@ button {
   opacity: 0.8;
 }
 
-.solutions4-row {
+.solutions-row {
   display: grid;
   grid-template-columns: repeat(12, 1fr);
   column-gap: 32px;
   align-items: start;
   width: 100%;
-  /* Clearance so the copy window's fade buffer (which extends --s4-buffer
+  /* Clearance so the copy window's fade buffer (which extends --solutions-buffer
      ABOVE the alignment line) sits in empty space, not over the subtitle. */
-  margin-top: calc(var(--s4-buffer) + 16px);
+  margin-top: calc(var(--solutions-buffer) + 16px);
 }
 
 /* Static tab list — only the active tab's styling changes; tabs never move. */
-.solutions4-tabs {
+.solutions-tabs {
   grid-column: span 2;
   width: 204px;
   display: flex;
@@ -3933,7 +2748,7 @@ button {
   padding-top: 4px;
 }
 
-.solutions4-tab {
+.solutions-tab {
   position: relative;
   margin: 0;
   padding: 0;
@@ -3954,11 +2769,11 @@ button {
   transition: opacity 0.2s ease;
 }
 
-.solutions4-tab--active {
+.solutions-tab--active {
   opacity: 0.8;
 }
 
-.solutions4-tab::before {
+.solutions-tab::before {
   content: '';
   position: absolute;
   left: -24px;
@@ -3970,53 +2785,53 @@ button {
   transition: opacity 0.2s ease;
 }
 
-.solutions4-tab--active::before {
+.solutions-tab--active::before {
   opacity: 1;
 }
 
 /* Fixed-height window cropped with a soft-edged mask (not a hard overflow
-   cut). The box extends --s4-buffer ABOVE the alignment line; the mask reaches
+   cut). The box extends --solutions-buffer ABOVE the alignment line; the mask reaches
    full opacity exactly at that line, so copy is only ever fading in the buffer
    region above it, never at or after it. */
-.solutions4-copy-window {
+.solutions-copy-window {
   grid-column: span 5;
   position: relative;
   overflow: hidden;
   min-width: 0;
-  margin-top: calc(-1 * var(--s4-buffer));
-  height: var(--s4-window);
+  margin-top: calc(-1 * var(--solutions-buffer));
+  height: var(--solutions-window);
   -webkit-mask-image: linear-gradient(
     to bottom,
     transparent 0,
-    transparent calc(var(--s4-buffer) - var(--s4-top-fade) + var(--s4-fade-drop)),
-    #000 calc(var(--s4-buffer) + var(--s4-fade-drop)),
-    #000 calc(100% - var(--s4-bottom-fade)),
+    transparent calc(var(--solutions-buffer) - var(--solutions-top-fade) + var(--solutions-fade-drop)),
+    #000 calc(var(--solutions-buffer) + var(--solutions-fade-drop)),
+    #000 calc(100% - var(--solutions-bottom-fade)),
     transparent 100%
   );
   mask-image: linear-gradient(
     to bottom,
     transparent 0,
-    transparent calc(var(--s4-buffer) - var(--s4-top-fade) + var(--s4-fade-drop)),
-    #000 calc(var(--s4-buffer) + var(--s4-fade-drop)),
-    #000 calc(100% - var(--s4-bottom-fade)),
+    transparent calc(var(--solutions-buffer) - var(--solutions-top-fade) + var(--solutions-fade-drop)),
+    #000 calc(var(--solutions-buffer) + var(--solutions-fade-drop)),
+    #000 calc(100% - var(--solutions-bottom-fade)),
     transparent 100%
   );
 }
 
 /* Absolutely positioned so its height never affects layout; JS drives its
    transform. Positioned ancestor for the headings' offsetTop measurements. */
-.solutions4-copy-track {
+.solutions-copy-track {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   display: flex;
   flex-direction: column;
-  gap: var(--s4-gap);
+  gap: var(--solutions-gap);
   will-change: transform;
 }
 
-.solutions4-copy-panel {
+.solutions-copy-panel {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -4026,7 +2841,7 @@ button {
   word-break: break-word;
 }
 
-.solutions4-copy-heading {
+.solutions-copy-heading {
   margin: 0;
   width: 100%;
   font-family: 'Inter', sans-serif;
@@ -4037,7 +2852,7 @@ button {
   color: var(--color-headline);
 }
 
-.solutions4-copy-desc {
+.solutions-copy-desc {
   margin: 0;
   width: 100%;
   font-family: 'Inter', sans-serif;
@@ -4049,7 +2864,7 @@ button {
   opacity: 0.8;
 }
 
-.solutions4-copy-bottom {
+.solutions-copy-bottom {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -4061,17 +2876,17 @@ button {
 /* Visual window: same push-crossfade mechanic as the original, ported verbatim.
    Its top sits on the alignment line (row start), level with the tabs and the
    opaque top of the copy. */
-.solutions4-visual-window {
+.solutions-visual-window {
   grid-column: span 5;
   position: relative;
   /* Starts at the alignment line (no buffer above it), so its height is the
      window box minus the buffer — bottom then aligns with the copy box bottom. */
-  height: calc(var(--s4-window) - var(--s4-buffer));
+  height: calc(var(--solutions-window) - var(--solutions-buffer));
   overflow: hidden;
   border-radius: 8px;
 }
 
-.solutions4-visual-placeholder {
+.solutions-visual-placeholder {
   position: absolute;
   inset: 0;
   display: flex;
@@ -4089,30 +2904,29 @@ button {
   z-index: 1;
 }
 
-.solutions4-visual-placeholder--offscreen-top {
+.solutions-visual-placeholder--offscreen-top {
   transform: translateY(-100%);
 }
 
-.solutions4-visual-placeholder--active {
+.solutions-visual-placeholder--active {
   transform: translateY(0);
   pointer-events: auto;
 }
 
-.solutions4-visual-image {
+.solutions-visual-image {
   display: block;
   width: 100%;
   height: auto;
 }
 
 /* Below 900px: drop all of it — no sticky, no mask, no transform. Stack
-   title -> tabs (row, wrapped) -> all four panels -> single visual, mirroring
-   the existing .solutions-wrapper / .solutions-alt2-wrapper fallback. */
+   title -> tabs (row, wrapped) -> all four panels -> single visual. */
 @media (max-width: 900px) {
-  .solutions4-scroller {
+  .solutions-scroller {
     height: auto;
   }
 
-  .solutions4-stage {
+  .solutions-stage {
     position: static;
     height: auto;
     display: block;
@@ -4120,17 +2934,17 @@ button {
     padding-bottom: 112px;
   }
 
-  .solutions4-block {
+  .solutions-block {
     gap: 32px;
   }
 
-  .solutions4-row {
+  .solutions-row {
     grid-template-columns: 1fr;
     row-gap: 32px;
     margin-top: 0;
   }
 
-  .solutions4-tabs {
+  .solutions-tabs {
     grid-column: 1;
     width: 100%;
     flex-direction: row;
@@ -4138,11 +2952,11 @@ button {
     gap: 16px 24px;
   }
 
-  .solutions4-tab::before {
+  .solutions-tab::before {
     display: none;
   }
 
-  .solutions4-copy-window {
+  .solutions-copy-window {
     grid-column: 1;
     margin-top: 0;
     height: auto;
@@ -4151,13 +2965,13 @@ button {
     mask-image: none;
   }
 
-  .solutions4-copy-track {
+  .solutions-copy-track {
     position: static;
     transform: none !important;
     gap: 48px;
   }
 
-  .solutions4-visual-window {
+  .solutions-visual-window {
     grid-column: 1;
     height: 60vh;
   }
